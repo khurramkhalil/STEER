@@ -13,7 +13,7 @@ venv/
 
 # Project specific
 checkpoints/
-data/
+# data/
 # outputs/
 # wandb/
 *.egg-info/
