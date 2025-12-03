@@ -5,11 +5,18 @@ import math
 import yaml
 import shutil
 import copy
+from dotenv import load_dotenv
+from huggingface_hub import HfApi, login
+
+load_dotenv()
 
 import torch
 import torch.distributed as dist
 from torch import nn
 from torch.utils.data import DataLoader
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {DEVICE}")
 
 import tqdm
 import wandb
@@ -17,12 +24,17 @@ import coolname
 import hydra
 import pydantic
 from omegaconf import DictConfig
-from adam_atan2 import AdamATan2
+try:
+    from adam_atan2 import AdamATan2
+except ImportError:
+    from torch.optim import AdamW as AdamATan2
+    print("WARNING: AdamATan2 not found, using AdamW instead")
 
 from puzzle_dataset import PuzzleDataset, PuzzleDatasetConfig, PuzzleDatasetMetadata
 from utils.functions import load_model_class, get_model_source_path
 from models.sparse_embedding import CastedSparseEmbeddingSignSGD_Distributed
 from models.ema import EMAHelper
+from steer.loss import STEERLoss
 
 
 class LossConfig(pydantic.BaseModel):
@@ -82,6 +94,11 @@ class PretrainConfig(pydantic.BaseModel):
     ema: bool = False # use Exponential-Moving-Average
     ema_rate: float = 0.999 # EMA-rate
     freeze_weights: bool = False # If True, freeze weights and only learn the embeddings
+    
+    # STEER
+    steer_lambda: float = 0.0
+    steer_epsilon_viol: float = 0.1
+    steer_epsilon_stab: float = 0.01
 
 @dataclass
 class TrainState:
@@ -92,6 +109,8 @@ class TrainState:
 
     step: int
     total_steps: int
+    
+    steer_loss_fn: Optional[nn.Module] = None
 
 
 def create_dataloader(config: PretrainConfig, split: str, rank: int, world_size: int, **kwargs):
@@ -127,7 +146,7 @@ def create_model(config: PretrainConfig, train_metadata: PuzzleDatasetMetadata, 
     model_cls = load_model_class(config.arch.name)
     loss_head_cls = load_model_class(config.arch.loss.name)
 
-    with torch.device("cuda"):
+    with torch.device(DEVICE):
         model: nn.Module = model_cls(model_cfg)
         print(model)
         model = loss_head_cls(model, **config.arch.loss.__pydantic_extra__)  # type: ignore
@@ -228,7 +247,8 @@ def init_train_state(config: PretrainConfig, train_metadata: PuzzleDatasetMetada
         model=model,
         optimizers=optimizers,
         optimizer_lrs=optimizer_lrs,
-        carry=None
+        carry=None,
+        steer_loss_fn=STEERLoss(epsilon_viol=config.steer_epsilon_viol, epsilon_stab=config.steer_epsilon_stab) if config.steer_lambda > 0 else None
     )
 
 
@@ -238,7 +258,25 @@ def save_train_state(config: PretrainConfig, train_state: TrainState):
         return
 
     os.makedirs(config.checkpoint_path, exist_ok=True)
+    os.makedirs(config.checkpoint_path, exist_ok=True)
     torch.save(train_state.model.state_dict(), os.path.join(config.checkpoint_path, f"step_{train_state.step}"))
+    
+    # Push to HF Hub
+    if os.environ.get("HF_TOKEN"):
+        try:
+            login(token=os.environ["HF_TOKEN"])
+            api = HfApi()
+            repo_id = f"{os.environ.get('WANDB_ENTITY', 'user')}/{config.project_name}"
+            api.create_repo(repo_id=repo_id, exist_ok=True, private=True)
+            api.upload_folder(
+                folder_path=config.checkpoint_path,
+                repo_id=repo_id,
+                path_in_repo=config.run_name,
+                commit_message=f"Checkpoint step {train_state.step}"
+            )
+            print(f"Uploaded checkpoint to HF Hub: {repo_id}")
+        except Exception as e:
+            print(f"Failed to upload to HF Hub: {e}")
 
 
 def load_checkpoint(model: nn.Module, config: PretrainConfig):
@@ -246,7 +284,7 @@ def load_checkpoint(model: nn.Module, config: PretrainConfig):
         print(f"Loading checkpoint {config.load_checkpoint}")
 
         # Load state dict
-        state_dict = torch.load(config.load_checkpoint, map_location="cuda")
+        state_dict = torch.load(config.load_checkpoint, map_location=DEVICE)
 
         # Resize and reset puzzle emb if needed
         puzzle_emb_name = "_orig_mod.model.inner.puzzle_emb.weights"
@@ -292,15 +330,21 @@ def train_batch(config: PretrainConfig, train_state: TrainState, batch: Any, glo
         return
 
     # To device
-    batch = {k: v.cuda() for k, v in batch.items()}
+    batch = {k: v.to(DEVICE) for k, v in batch.items()}
 
     # Init carry if it is None
     if train_state.carry is None:
-        with torch.device("cuda"):
+        with torch.device(DEVICE):
             train_state.carry = train_state.model.initial_carry(batch)  # type: ignore
 
     # Forward
-    train_state.carry, loss, metrics, _, _ = train_state.model(carry=train_state.carry, batch=batch, return_keys=[])
+    train_state.carry, loss, metrics, detached_outputs, _ = train_state.model(carry=train_state.carry, batch=batch, return_keys=[])
+    
+    # STEER Loss
+    if train_state.steer_loss_fn is not None and "trajectory" in detached_outputs:
+        steer_loss, steer_metrics = train_state.steer_loss_fn(detached_outputs["trajectory"])
+        loss = loss + config.steer_lambda * steer_loss
+        metrics.update(steer_metrics)
 
     ((1 / global_batch_size) * loss).backward()
 
@@ -377,8 +421,8 @@ def evaluate(
                 print(f"Processing batch {processed_batches}: {set_name}")
             
             # To device
-            batch = {k: v.cuda() for k, v in batch.items()}
-            with torch.device("cuda"):
+            batch = {k: v.to(DEVICE) for k, v in batch.items()}
+            with torch.device(DEVICE):
                 carry = train_state.model.initial_carry(batch)  # type: ignore
 
             # Forward
@@ -414,7 +458,7 @@ def evaluate(
                     sorted(metrics.keys())
                 )  # Sort keys to guarantee all processes use the same order.
                 metric_values = torch.zeros(
-                    (len(set_ids), len(metrics.values())), dtype=torch.float32, device="cuda"
+                    (len(set_ids), len(metrics.values())), dtype=torch.float32, device=DEVICE
                 )
 
             metric_values[set_id] += torch.stack([metrics[k] for k in metric_keys])
@@ -546,7 +590,8 @@ def launch(hydra_config: DictConfig):
         RANK = dist.get_rank()
         WORLD_SIZE = dist.get_world_size()
 
-        torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
+        if torch.cuda.is_available():
+            torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
         
         # CPU GLOO process group
         CPU_PROCESS_GROUP = dist.new_group(backend="gloo")
