@@ -632,7 +632,18 @@ def launch(hydra_config: DictConfig):
     ema_helper = None
     if RANK == 0:
         progress_bar = tqdm.tqdm(total=train_state.total_steps)
-        wandb.init(project=config.project_name, name=config.run_name, config=config.model_dump(), settings=wandb.Settings(_disable_stats=True))  # type: ignore
+        
+        # Debug WandB Entity
+        wandb_entity = os.environ.get("WANDB_ENTITY")
+        print(f"Initializing WandB with entity: {wandb_entity}")
+        
+        wandb.init(
+            project=config.project_name, 
+            entity=wandb_entity,
+            name=config.run_name, 
+            config=config.model_dump(), 
+            settings=wandb.Settings(_disable_stats=True)
+        )  # type: ignore
         wandb.log({"num_params": sum(x.numel() for x in train_state.model.parameters())}, step=0)
         save_code_and_config(config)
     if config.ema:
