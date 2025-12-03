@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+# .env
+
+# Mac
+.DS_Store
+
+# Project specific
+checkpoints/
+data/
+# outputs/
+# wandb/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
