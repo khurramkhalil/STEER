@@ -44,10 +44,19 @@ By balancing these factors via `steer_lambda`, we achieve higher accuracy and be
 
 ```bash
 pip install --upgrade pip wheel setuptools
-pip install --pre --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu126
+pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cu126
 pip install -r requirements.txt
-pip install --no-cache-dir --no-build-isolation adam-atan2 
+pip install --no-cache-dir --no-build-isolation adam-atan2==0.0.3
 wandb login YOUR-LOGIN
+```
+
+## Tests
+
+The STEER regularizer is covered by a unit/integration test suite (constraint
+signals, STL robustness semantics, gradient flow, and loss-head wiring):
+
+```bash
+pytest
 ```
 
 ## Dataset Preparation

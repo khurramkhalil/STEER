@@ -6,19 +6,28 @@ __pycache__/
 .Python
 env/
 venv/
-# .env
+.pytest_cache/
+
+# Secrets / environment
+.env
 
 # Mac
 .DS_Store
 
+# Logs and scratch output
+*.log
+crash_log.txt
+
 # Project specific
 checkpoints/
 data/
-# outputs/
-# wandb/
+outputs/
+wandb/
 *.egg-info/
+
+# Nested TRM working copy (tracked in its own git repo)
+TRM/
 
 # IDE
 .vscode/
 .idea/
-.env
