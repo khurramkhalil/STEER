@@ -111,8 +111,6 @@ class TrainState:
 
     step: int
     total_steps: int
-    
-    steer_loss_fn: Optional[nn.Module] = None
 
 
 def create_dataloader(config: PretrainConfig, split: str, rank: int, world_size: int, **kwargs):
@@ -151,7 +149,20 @@ def create_model(config: PretrainConfig, train_metadata: PuzzleDatasetMetadata, 
     with torch.device(DEVICE):
         model: nn.Module = model_cls(model_cfg)
         print(model)
-        model = loss_head_cls(model, **config.arch.loss.__pydantic_extra__)  # type: ignore
+        steer_loss_fn = (
+            STEERLoss(
+                epsilon_viol=config.steer_epsilon_viol,
+                epsilon_stab=config.steer_epsilon_stab,
+            )
+            if config.steer_lambda > 0
+            else None
+        )
+        model = loss_head_cls(
+            model,
+            steer_loss_fn=steer_loss_fn,
+            steer_lambda=config.steer_lambda,
+            **config.arch.loss.__pydantic_extra__,
+        )  # type: ignore
         if not os.environ.get("DISABLE_COMPILE"):
             print("Compiling model...")
             model = torch.compile(model)  # type: ignore
@@ -262,7 +273,6 @@ def init_train_state(config: PretrainConfig, train_metadata: PuzzleDatasetMetada
         optimizers=optimizers,
         optimizer_lrs=optimizer_lrs,
         carry=None,
-        steer_loss_fn=STEERLoss(epsilon_viol=config.steer_epsilon_viol, epsilon_stab=config.steer_epsilon_stab) if config.steer_lambda > 0 else None
     )
 
 
@@ -376,14 +386,9 @@ def train_batch(config: PretrainConfig, train_state: TrainState, batch: Any, glo
         with torch.device(DEVICE):
             train_state.carry = train_state.model.initial_carry(batch)  # type: ignore
 
-    # Forward
+    # Forward. The STEER regularizer (if enabled) is applied inside the loss head
+    # where the trajectory still carries gradients; `loss` already includes it.
     train_state.carry, loss, metrics, detached_outputs, _ = train_state.model(carry=train_state.carry, batch=batch, return_keys=[])
-    
-    # STEER Loss
-    if train_state.steer_loss_fn is not None and "trajectory" in detached_outputs:
-        steer_loss, steer_metrics = train_state.steer_loss_fn(detached_outputs["trajectory"])
-        loss = loss + config.steer_lambda * steer_loss
-        metrics.update(steer_metrics)
 
     ((1 / global_batch_size) * loss).backward()
 

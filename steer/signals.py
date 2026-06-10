@@ -1,109 +1,132 @@
+"""Differentiable Sudoku constraint signals for the STEER regularizer.
+
+These signals turn a (soft) distribution over Sudoku cell values into scalar
+quantities that downstream Signal Temporal Logic (STL) properties operate on:
+
+* ``violation`` -- how badly the grid breaks Sudoku's all-different constraints,
+* ``progress``  -- how much of the grid is still unfilled (blank mass),
+* ``stability`` -- how much the prediction changed between two reasoning steps.
+
+All signals are computed from *probabilities* (post-softmax) so they are smooth
+and differentiable with respect to the model's logits.
+
+Token / vocabulary layout (per cell, ``VOCAB_SIZE`` classes)::
+
+    index 0       -> PAD
+    index 1       -> BLANK (empty cell)
+    index 2..10   -> digits 1..9
+"""
+
+from __future__ import annotations
+
 import torch
 import torch.nn.functional as F
 
+# --- Sudoku / vocabulary geometry -------------------------------------------
+GRID_SIZE = 81          # 9 x 9 cells, flattened
+SIDE = 9                # cells per row / column / box
+NUM_DIGITS = 9          # digits 1..9
+VOCAB_SIZE = 11         # PAD + BLANK + 9 digits
+PAD_TOKEN = 0
+BLANK_TOKEN = 1
+FIRST_DIGIT_TOKEN = 2   # token index of digit "1"
+
+
 class SudokuSignals:
-    def __init__(self):
-        # Pre-compute indices for rows, cols, boxes
-        self.rows = self._get_row_indices()
-        self.cols = self._get_col_indices()
-        self.boxes = self._get_box_indices()
-        self.all_units = self.rows + self.cols + self.boxes
-        
-        # Indices as a single tensor for efficient gathering: [27, 9]
-        # 27 units (9 rows + 9 cols + 9 boxes), each has 9 cells
-        self.unit_indices = torch.tensor(self.all_units, dtype=torch.long)
+    """Computes differentiable constraint signals for batches of Sudoku grids.
 
-    def _get_row_indices(self):
-        return [[r * 9 + c for c in range(9)] for r in range(9)]
+    The 27 Sudoku "units" (9 rows, 9 columns, 9 boxes) are pre-computed once as
+    a ``(27, 9)`` index tensor so that violation scores can be evaluated with a
+    single gather.
+    """
 
-    def _get_col_indices(self):
-        return [[r * 9 + c for r in range(9)] for c in range(9)]
+    def __init__(self) -> None:
+        units = self._row_indices() + self._col_indices() + self._box_indices()
+        # (27, 9): 27 units, each referencing 9 flat cell indices.
+        self.unit_indices = torch.tensor(units, dtype=torch.long)
 
-    def _get_box_indices(self):
-        indices = []
-        for br in range(3):
-            for bc in range(3):
-                box = []
-                for r in range(3):
-                    for c in range(3):
-                        box.append((br * 3 + r) * 9 + (bc * 3 + c))
-                indices.append(box)
-        return indices
+    # -- unit definitions ----------------------------------------------------
+    @staticmethod
+    def _row_indices() -> list[list[int]]:
+        return [[r * SIDE + c for c in range(SIDE)] for r in range(SIDE)]
 
-    def to(self, device):
+    @staticmethod
+    def _col_indices() -> list[list[int]]:
+        return [[r * SIDE + c for r in range(SIDE)] for c in range(SIDE)]
+
+    @staticmethod
+    def _box_indices() -> list[list[int]]:
+        boxes = []
+        for box_row in range(3):
+            for box_col in range(3):
+                cells = [
+                    (box_row * 3 + r) * SIDE + (box_col * 3 + c)
+                    for r in range(3)
+                    for c in range(3)
+                ]
+                boxes.append(cells)
+        return boxes
+
+    def to(self, device: torch.device | str) -> "SudokuSignals":
+        """Move the cached index tensor to ``device`` (in place) and return self."""
         self.unit_indices = self.unit_indices.to(device)
         return self
 
+    # -- signals -------------------------------------------------------------
     def compute_violation_score(self, probs: torch.Tensor) -> torch.Tensor:
-        """
-        Computes the violation score for a batch of Sudoku grids.
-        
+        """Expected number of duplicate digits across all 27 units.
+
+        For each unit and digit we sum the probability mass assigned to that
+        digit across the unit's 9 cells. A valid unit places each digit exactly
+        once, so any expected mass above 1.0 is a (soft) duplication. We sum
+        ``relu(count - 1)`` over all units and digits.
+
         Args:
-            probs: Tensor of shape (batch_size, 81, 11). 
-                   11 classes: 0=PAD, 1=Blank, 2..10=Digits 1..9.
-                   
+            probs: ``(batch, GRID_SIZE, VOCAB_SIZE)`` probabilities.
+
         Returns:
-            violation_score: Tensor of shape (batch_size,)
+            ``(batch,)`` non-negative violation scores (0.0 == constraint-satisfying).
         """
         batch_size = probs.shape[0]
-        
-        # We only care about digits 1-9 (indices 2-10 in vocab)
-        # Shape: (batch_size, 81, 9)
-        digit_probs = probs[:, :, 2:] 
-        
-        # Gather probabilities for each unit
-        # unit_indices shape: (27, 9)
-        # gathered_probs shape: (batch_size, 27, 9, 9) 
-        # (batch, unit, cell_in_unit, digit)
-        
-        # Expand indices for batch gathering
-        flat_indices = self.unit_indices.view(-1) # (243,)
-        gathered_probs = digit_probs[:, flat_indices, :].view(batch_size, 27, 9, 9)
-        
-        # Sum probabilities for each digit within each unit
-        # Shape: (batch_size, 27, 9) - sum over cell_in_unit dim
-        digit_counts = gathered_probs.sum(dim=2)
-        
-        # A valid unit has exactly one of each digit. 
-        # Violation is excess probability mass > 1.
-        # We want to penalize if sum(prob(digit)) > 1.
-        # Using ReLU(count - 1) captures "more than one instance"
-        
-        violations = F.relu(digit_counts - 1.0)
-        
-        # Sum over all units and all digits
-        total_violations = violations.sum(dim=(1, 2))
-        
-        return total_violations
+
+        # Keep only digit probabilities (drop PAD and BLANK): (batch, 81, 9)
+        digit_probs = probs[:, :, FIRST_DIGIT_TOKEN:]
+
+        # Gather the 9 cells of each of the 27 units: (batch, 27, 9, 9)
+        # dims -> (batch, unit, cell_in_unit, digit)
+        flat_indices = self.unit_indices.reshape(-1)  # (243,)
+        gathered = digit_probs[:, flat_indices, :].view(
+            batch_size, 27, SIDE, NUM_DIGITS
+        )
+
+        # Expected count of each digit within each unit: (batch, 27, 9)
+        digit_counts = gathered.sum(dim=2)
+
+        # Penalise expected mass beyond the single allowed occurrence.
+        excess = F.relu(digit_counts - 1.0)
+        return excess.sum(dim=(1, 2))
 
     def compute_progress_score(self, probs: torch.Tensor) -> torch.Tensor:
-        """
-        Computes the progress score (number of blanks).
-        
-        Args:
-            probs: Tensor of shape (batch_size, 81, 11).
-            
-        Returns:
-            progress_score: Tensor of shape (batch_size,)
-        """
-        # Index 1 is the "Blank" token
-        blank_probs = probs[:, :, 1]
-        
-        # Sum of blank probabilities across the grid
-        return blank_probs.sum(dim=1)
+        """Expected number of still-blank cells (lower == more progress).
 
-    def compute_stability_score(self, current_probs: torch.Tensor, prev_probs: torch.Tensor) -> torch.Tensor:
-        """
-        Computes stability score (difference from previous step).
-        Using MSE for smoothness.
-        
         Args:
-            current_probs: (batch_size, 81, 11)
-            prev_probs: (batch_size, 81, 11)
-            
+            probs: ``(batch, GRID_SIZE, VOCAB_SIZE)`` probabilities.
+
         Returns:
-            stability_score: (batch_size,)
+            ``(batch,)`` expected blank-cell count in ``[0, GRID_SIZE]``.
         """
-        # Mean Squared Error summed over grid and vocab
-        diff = (current_probs - prev_probs) ** 2
-        return diff.sum(dim=(1, 2))
+        return probs[:, :, BLANK_TOKEN].sum(dim=1)
+
+    def compute_stability_score(
+        self, current_probs: torch.Tensor, prev_probs: torch.Tensor
+    ) -> torch.Tensor:
+        """Sum of squared change between consecutive reasoning steps.
+
+        Args:
+            current_probs: ``(batch, GRID_SIZE, VOCAB_SIZE)`` at step ``t``.
+            prev_probs:    ``(batch, GRID_SIZE, VOCAB_SIZE)`` at step ``t - 1``.
+
+        Returns:
+            ``(batch,)`` non-negative change scores (0.0 == identical predictions).
+        """
+        return ((current_probs - prev_probs) ** 2).sum(dim=(1, 2))

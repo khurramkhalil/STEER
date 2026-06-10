@@ -39,10 +39,21 @@ def softmax_cross_entropy(logits, labels, ignore_index: int = -100):
 
 
 class ACTLossHead(nn.Module):
-    def __init__(self, model: nn.Module, loss_type: str):
+    def __init__(
+        self,
+        model: nn.Module,
+        loss_type: str,
+        steer_loss_fn: Optional[nn.Module] = None,
+        steer_lambda: float = 0.0,
+    ):
         super().__init__()
         self.model = model
         self.loss_fn = globals()[loss_type]
+        # Optional STEER regularizer. Registered as a submodule so it moves with
+        # the model (.to(device), DDP, etc.). When ``steer_loss_fn`` is None or
+        # ``steer_lambda`` is 0 the regularizer is inert.
+        self.steer_loss_fn = steer_loss_fn
+        self.steer_lambda = steer_lambda
         
     def initial_carry(self, *args, **kwargs):
         return self.model.initial_carry(*args, **kwargs)  # type: ignore
@@ -96,8 +107,19 @@ class ACTLossHead(nn.Module):
             q_continue_loss = F.binary_cross_entropy_with_logits(outputs["q_continue_logits"], outputs["target_q_continue"], reduction="sum")
 
             metrics["q_continue_loss"] = q_continue_loss.detach()
+
+        total_loss = lm_loss + 0.5 * (q_halt_loss + q_continue_loss)
+
+        # STEER regularization. Computed here (not post-hoc in the train loop) so
+        # the trajectory still carries gradients -- a detached trajectory would
+        # make the regularizer a silent no-op.
+        if self.steer_loss_fn is not None and self.steer_lambda > 0 and "trajectory" in outputs:
+            steer_loss, steer_metrics = self.steer_loss_fn(outputs["trajectory"])
+            total_loss = total_loss + self.steer_lambda * steer_loss
+            metrics.update(steer_metrics)
+
         # Filter outputs for return
         detached_outputs = {k: outputs[k].detach() for k in return_keys if k in outputs}
 
-        return new_carry, lm_loss + 0.5 * (q_halt_loss + q_continue_loss), metrics, detached_outputs, new_carry.halted.all()
+        return new_carry, total_loss, metrics, detached_outputs, new_carry.halted.all()
 
