@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.DS_Store
+checkpoints/
+data/
+outputs/
+wandb/
+*.egg-info/
+.git
+.vscode
+.idea

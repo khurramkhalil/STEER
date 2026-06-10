@@ -24,11 +24,13 @@ import coolname
 import hydra
 import pydantic
 from omegaconf import DictConfig
-try:
-    from adam_atan2 import AdamATan2
-except ImportError:
-    from torch.optim import AdamW as AdamATan2
-    print("WARNING: AdamATan2 not found, using AdamW instead")
+# try:
+#     from adam_atan2 import AdamATan2
+# except ImportError:
+#     from torch.optim import AdamW as AdamATan2
+#     print("WARNING: AdamATan2 not found, using AdamW instead")
+from torch.optim import AdamW as AdamATan2 # Force AdamW for compatibility
+print("WARNING: AdamATan2 import commented out, using AdamW instead")
 
 from puzzle_dataset import PuzzleDataset, PuzzleDatasetConfig, PuzzleDatasetMetadata
 from utils.functions import load_model_class, get_model_source_path
@@ -150,12 +152,20 @@ def create_model(config: PretrainConfig, train_metadata: PuzzleDatasetMetadata, 
         model: nn.Module = model_cls(model_cfg)
         print(model)
         model = loss_head_cls(model, **config.arch.loss.__pydantic_extra__)  # type: ignore
-        if "DISABLE_COMPILE" not in os.environ:
+        if not os.environ.get("DISABLE_COMPILE"):
+            print("Compiling model...")
             model = torch.compile(model)  # type: ignore
 
         # Load checkpoint
+        objects = [0, []]
         if rank == 0:
-            load_checkpoint(model, config)
+            step, opt_dicts = load_checkpoint(model, config)
+            objects = [step, opt_dicts]
+
+        if world_size > 1:
+            dist.broadcast_object_list(objects, src=0)
+            
+        step, opt_dicts = objects
 
         # Broadcast parameters from rank 0
         if world_size > 1:
@@ -208,7 +218,11 @@ def create_model(config: PretrainConfig, train_metadata: PuzzleDatasetMetadata, 
             config.lr
         ]
 
-    return model, optimizers, optimizer_lrs
+    if len(opt_dicts) == len(optimizers):
+        for opt, opt_dict in zip(optimizers, opt_dicts):
+            opt.load_state_dict(opt_dict)
+
+    return model, optimizers, optimizer_lrs, step
 
 def mix_weights_direct(device, alpha, net, nets):
     sd = []
@@ -238,10 +252,10 @@ def init_train_state(config: PretrainConfig, train_metadata: PuzzleDatasetMetada
     total_steps = int(config.epochs * train_metadata.total_groups * train_metadata.mean_puzzle_examples / config.global_batch_size)
 
     # Model
-    model, optimizers, optimizer_lrs = create_model(config, train_metadata, rank=rank, world_size=world_size)
+    model, optimizers, optimizer_lrs, step = create_model(config, train_metadata, rank=rank, world_size=world_size)
 
     return TrainState(
-        step=0,
+        step=step,
         total_steps=total_steps,
 
         model=model,
@@ -253,13 +267,16 @@ def init_train_state(config: PretrainConfig, train_metadata: PuzzleDatasetMetada
 
 
 def save_train_state(config: PretrainConfig, train_state: TrainState):
-    # FIXME: Only saved model.
     if config.checkpoint_path is None:
         return
 
     os.makedirs(config.checkpoint_path, exist_ok=True)
-    os.makedirs(config.checkpoint_path, exist_ok=True)
-    torch.save(train_state.model.state_dict(), os.path.join(config.checkpoint_path, f"step_{train_state.step}"))
+    checkpoint = {
+        "model_state_dict": train_state.model.state_dict(),
+        "optimizer_states": [opt.state_dict() for opt in train_state.optimizers],
+        "step": train_state.step
+    }
+    torch.save(checkpoint, os.path.join(config.checkpoint_path, f"step_{train_state.step}"))
     
     # Push to HF Hub
     if os.environ.get("HF_TOKEN"):
@@ -268,6 +285,17 @@ def save_train_state(config: PretrainConfig, train_state: TrainState):
             api = HfApi()
             repo_id = f"{os.environ.get('WANDB_ENTITY', 'user')}/{config.project_name}"
             api.create_repo(repo_id=repo_id, exist_ok=True, private=True)
+            
+            # Generate Model Card
+            readme_path = os.path.join(config.checkpoint_path, "README.md")
+            with open(readme_path, "w") as f:
+                f.write(f"---\n")
+                f.write(f"tags:\n- steer\n- sudoku\n- reasoning\n")
+                f.write(f"---\n\n")
+                f.write(f"# STEER Model: {config.run_name}\n\n")
+                f.write(f"## Configuration\n\n```yaml\n{yaml.dump(config.model_dump())}\n```\n\n")
+                f.write(f"## Training State\n- Step: {train_state.step}\n")
+            
             api.upload_folder(
                 folder_path=config.checkpoint_path,
                 repo_id=repo_id,
@@ -286,18 +314,29 @@ def load_checkpoint(model: nn.Module, config: PretrainConfig):
         # Load state dict
         state_dict = torch.load(config.load_checkpoint, map_location=DEVICE)
 
+        if "model_state_dict" in state_dict:
+            model_dict = state_dict["model_state_dict"]
+            opt_dicts = state_dict.get("optimizer_states", [])
+            step = state_dict.get("step", 0)
+        else:
+            model_dict = state_dict
+            opt_dicts = []
+            step = 0
+
         # Resize and reset puzzle emb if needed
         puzzle_emb_name = "_orig_mod.model.inner.puzzle_emb.weights"
         expected_shape: torch.Size = model.model.puzzle_emb.weights.shape  # type: ignore
-        if puzzle_emb_name in state_dict:
-            puzzle_emb = state_dict[puzzle_emb_name]
+        if puzzle_emb_name in model_dict:
+            puzzle_emb = model_dict[puzzle_emb_name]
             if puzzle_emb.shape != expected_shape:
                 print(f"Resetting puzzle embedding as shape is different. Found {puzzle_emb.shape}, Expected {expected_shape}")
                 # Re-initialize using mean
-                state_dict[puzzle_emb_name] = (
+                model_dict[puzzle_emb_name] = (
                     torch.mean(puzzle_emb, dim=0, keepdim=True).expand(expected_shape).contiguous()
                 )
-        model.load_state_dict(state_dict, assign=True)
+        model.load_state_dict(model_dict, assign=True)
+        return step, opt_dicts
+    return 0, []
 
 
 def compute_lr(base_lr: float, config: PretrainConfig, train_state: TrainState):
@@ -642,7 +681,7 @@ def launch(hydra_config: DictConfig):
             entity=wandb_entity,
             name=config.run_name, 
             config=config.model_dump(), 
-            settings=wandb.Settings(_disable_stats=True)
+            settings=wandb.Settings(_disable_stats=False)
         )  # type: ignore
         wandb.log({"num_params": sum(x.numel() for x in train_state.model.parameters())}, step=0)
         save_code_and_config(config)

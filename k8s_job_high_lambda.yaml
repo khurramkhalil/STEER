@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: steer-train-job-high-lambda-exact
+  namespace: gp-engine-mizzou-dcps
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: steer-train-high-lambda-exact
+    spec:
+      restartPolicy: Never
+      # Request A100 GPUs (or GPUs with >24GB VRAM)
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.product
+                operator: In
+                values:
+                - NVIDIA-A100-SXM4-80GB
+                - NVIDIA-A100-80GB-PCIe
+      tolerations:
+      - key: "nautilus.io/reservation"
+        operator: "Equal"
+        value: "mizzou"
+        effect: "NoSchedule"
+      containers:
+      - name: steer-train
+        image: khurramkhalil/steer:latest
+        imagePullPolicy: Always
+        workingDir: /workspace/STEER
+        # Command:
+        # 1. Generate dataset (since it's not in the image)
+        # 2. Run distributed training with torchrun
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Generating dataset..."
+            python dataset/build_sudoku_dataset.py --output-dir data/sudoku-extreme-1k-noaug --subsample-size 1000 --num-aug 0 && \
+            echo "Starting training..." && \
+            torchrun --nproc_per_node=4 pretrain.py \
+            arch=trm \
+            data_paths="[data/sudoku-extreme-1k-noaug]" \
+            evaluators="[]" \
+            epochs=50000 eval_interval=200 \
+            lr=4e-4 puzzle_emb_lr=4e-4 weight_decay=1.0 puzzle_emb_weight_decay=1.0 \
+            arch.mlp_t=True arch.pos_encodings=none \
+            arch.L_layers=2 \
+            arch.H_cycles=3 arch.L_cycles=6 \
+            +steer_lambda=1.0 \
+            +steer_epsilon_viol=0.1 \
+            +steer_epsilon_stab=0.01 \
+            global_batch_size=512 \
+            +run_name="L1.0_E0.1" \
+            +project_name="STEER_PAPER_EXACT" \
+            ema=True \
+            eval_interval=200
+        resources:
+          requests:
+            nvidia.com/a100: 4
+            memory: "32Gi"
+            cpu: "16"
+          limits:
+            nvidia.com/a100: 4
+            memory: "48Gi"
+            cpu: "24"
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        envFrom:
+        - secretRef:
+            name: steer-secrets
+        # Shared memory fix for PyTorch DDP
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory

@@ -1,0 +1,999 @@
+Processing batch 748: all
+  Completed inference in 16 steps
+Processing batch 749: all
+  Completed inference in 16 steps
+Processing batch 750: all
+  Completed inference in 16 steps
+Processing batch 751: all
+  Completed inference in 16 steps
+Processing batch 752: all
+  Completed inference in 16 steps
+Processing batch 753: all
+  Completed inference in 16 steps
+Processing batch 754: all
+  Completed inference in 16 steps
+Processing batch 755: all
+  Completed inference in 16 steps
+Processing batch 756: all
+  Completed inference in 16 steps
+Processing batch 757: all
+  Completed inference in 16 steps
+Processing batch 758: all
+  Completed inference in 16 steps
+Processing batch 759: all
+  Completed inference in 16 steps
+Processing batch 760: all
+  Completed inference in 16 steps
+Processing batch 761: all
+  Completed inference in 16 steps
+Processing batch 762: all
+  Completed inference in 16 steps
+Processing batch 763: all
+  Completed inference in 16 steps
+Processing batch 764: all
+  Completed inference in 16 steps
+Processing batch 765: all
+  Completed inference in 16 steps
+Processing batch 766: all
+  Completed inference in 16 steps
+Processing batch 767: all
+  Completed inference in 16 steps
+Processing batch 768: all
+  Completed inference in 16 steps
+Processing batch 769: all
+  Completed inference in 16 steps
+Processing batch 770: all
+  Completed inference in 16 steps
+Processing batch 771: all
+  Completed inference in 16 steps
+Processing batch 772: all
+  Completed inference in 16 steps
+Processing batch 773: all
+  Completed inference in 16 steps
+Processing batch 774: all
+  Completed inference in 16 steps
+Processing batch 775: all
+  Completed inference in 16 steps
+Processing batch 776: all
+  Completed inference in 16 steps
+Processing batch 777: all
+  Completed inference in 16 steps
+Processing batch 778: all
+  Completed inference in 16 steps
+Processing batch 779: all
+  Completed inference in 16 steps
+Processing batch 780: all
+  Completed inference in 16 steps
+Processing batch 781: all
+  Completed inference in 16 steps
+Processing batch 782: all
+  Completed inference in 16 steps
+Processing batch 783: all
+  Completed inference in 16 steps
+Processing batch 784: all
+  Completed inference in 16 steps
+Processing batch 785: all
+  Completed inference in 16 steps
+Processing batch 786: all
+  Completed inference in 16 steps
+Processing batch 787: all
+  Completed inference in 16 steps
+Processing batch 788: all
+  Completed inference in 16 steps
+Processing batch 789: all
+  Completed inference in 16 steps
+Processing batch 790: all
+  Completed inference in 16 steps
+Processing batch 791: all
+  Completed inference in 16 steps
+Processing batch 792: all
+  Completed inference in 16 steps
+Processing batch 793: all
+  Completed inference in 16 steps
+Processing batch 794: all
+  Completed inference in 16 steps
+Processing batch 795: all
+  Completed inference in 16 steps
+Processing batch 796: all
+  Completed inference in 16 steps
+Processing batch 797: all
+  Completed inference in 16 steps
+Processing batch 798: all
+  Completed inference in 16 steps
+Processing batch 799: all
+  Completed inference in 16 steps
+Processing batch 800: all
+  Completed inference in 16 steps
+Processing batch 801: all
+  Completed inference in 16 steps
+Processing batch 802: all
+  Completed inference in 16 steps
+Processing batch 803: all
+  Completed inference in 16 steps
+Processing batch 804: all
+  Completed inference in 16 steps
+Processing batch 805: all
+  Completed inference in 16 steps
+Processing batch 806: all
+  Completed inference in 16 steps
+Processing batch 807: all
+  Completed inference in 16 steps
+Processing batch 808: all
+  Completed inference in 16 steps
+Processing batch 809: all
+  Completed inference in 16 steps
+Processing batch 810: all
+  Completed inference in 16 steps
+Processing batch 811: all
+  Completed inference in 16 steps
+Processing batch 812: all
+  Completed inference in 16 steps
+Processing batch 813: all
+  Completed inference in 16 steps
+Processing batch 814: all
+  Completed inference in 16 steps
+Processing batch 815: all
+  Completed inference in 16 steps
+Processing batch 816: all
+  Completed inference in 16 steps
+Processing batch 817: all
+  Completed inference in 16 steps
+Processing batch 818: all
+  Completed inference in 16 steps
+Processing batch 819: all
+  Completed inference in 16 steps
+Processing batch 820: all
+  Completed inference in 16 steps
+Processing batch 821: all
+  Completed inference in 16 steps
+Processing batch 822: all
+  Completed inference in 16 steps
+Processing batch 823: all
+  Completed inference in 16 steps
+Processing batch 824: all
+  Completed inference in 16 steps
+Processing batch 825: all
+  Completed inference in 16 steps
+Processing batch 826: all
+  Completed inference in 16 steps
+
+Running 0 evaluator(s)...
+All evaluators completed!
+SAVE CHECKPOINT
+[2025-12-08 13:20:45,621][httpx][INFO] - HTTP Request: GET https://huggingface.co/api/whoami-v2 "HTTP/1.1 200 OK"
+[2025-12-08 13:20:45,623][huggingface_hub._login][WARNING] - Note: Environment variable`HF_TOKEN` is set and is the current active token independently from the token you've just configured.
+:42<00:25,  9.95it/s]100%|█████████▉| 97400/97656 [10:41:42<00:25,  9.95it/s]100%|█████████▉| 97401/97656 [10:41:42<00:25,  9.95it/s]100%|█████████▉| 97402/97656 [10:41:42<00:25,  9.95it/s]100%|█████████▉| 97403/97656 [10:41:43<00:25,  9.96it/s]100%|█████████▉| 97404/97656 [10:41:43<00:25,  9.96it/s]100%|█████████▉| 97405/97656 [10:41:43<00:25,  9.95it/s]100%|█████████▉| 97406/97656 [10:41:43<00:25,  9.95it/s]100%|█████████▉| 97407/97656 [10:41:43<00:25,  9.96it/s]100%|█████████▉| 97408/97656 [10:41:43<00:24,  9.96it/s]100%|█████████▉| 97409/97656 [10:41:43<00:24,  9.95it/s]100%|█████████▉| 97410/97656 [10:41:43<00:24,  9.95it/s]100%|█████████▉| 97411/97656 [10:41:43<00:24,  9.95it/s]100%|█████████▉| 97412/97656 [10:41:43<00:24,  9.95it/s]100%|█████████▉| 97413/97656 [10:41:44<00:24,  9.95it/s]100%|█████████▉| 97414/97656 [10:41:44<00:24,  9.95it/s]100%|█████████▉| 97415/97656 [10:41:44<00:24,  9.95it/s]100%|█████████▉| 97416/97656 [10:41:44<00:24,  9.94it/s]100%|█████████▉| 97417/97656 [10:41:44<00:24,  9.95it/s]100%|█████████▉| 97418/97656 [10:41:44<00:23,  9.95it/s]100%|█████████▉| 97419/97656 [10:41:44<00:23,  9.95it/s]100%|█████████▉| 97420/97656 [10:41:44<00:23,  9.94it/s]100%|█████████▉| 97421/97656 [10:41:44<00:23,  9.95it/s]100%|█████████▉| 97422/97656 [10:41:45<00:23,  9.91it/s]100%|█████████▉| 97423/97656 [10:41:45<00:23,  9.92it/s]100%|█████████▉| 97424/97656 [10:41:45<00:23,  9.92it/s]100%|█████████▉| 97425/97656 [10:41:45<00:23,  9.92it/s]100%|█████████▉| 97426/97656 [10:41:45<00:23,  9.93it/s]100%|█████████▉| 97427/97656 [10:41:45<00:23,  9.94it/s]100%|█████████▉| 97428/97656 [10:41:45<00:22,  9.95it/s]100%|█████████▉| 97429/97656 [10:41:45<00:22,  9.95it/s]100%|█████████▉| 97430/97656 [10:41:45<00:22,  9.95it/s]100%|█████████▉| 97431/97656 [10:41:45<00:22,  9.95it/s]100%|█████████▉| 97432/97656 [10:41:46<00:22,  9.95it/s]100%|█████████▉| 97433/97656 [10:41:46<00:22,  9.96it/s]100%|█████████▉| 97434/97656 [10:41:46<00:22,  9.94it/s]100%|█████████▉| 97435/97656 [10:41:46<00:22,  9.93it/s]100%|█████████▉| 97436/97656 [10:41:46<00:22,  9.93it/s]100%|█████████▉| 97437/97656 [10:41:46<00:22,  9.93it/s]100%|█████████▉| 97438/97656 [10:41:46<00:21,  9.94it/s]100%|█████████▉| 97439/97656 [10:41:46<00:21,  9.95it/s]100%|█████████▉| 97440/97656 [10:41:46<00:21,  9.96it/s]100%|█████████▉| 97441/97656 [10:41:46<00:21,  9.95it/s]100%|█████████▉| 97442/97656 [10:41:47<00:21,  9.95it/s]100%|█████████▉| 97443/97656 [10:41:47<00:21,  9.91it/s]100%|█████████▉| 97444/97656 [10:41:47<00:21,  9.91it/s]100%|█████████▉| 97445/97656 [10:41:47<00:21,  9.91it/s]100%|█████████▉| 97446/97656 [10:41:47<00:21,  9.92it/s]100%|█████████▉| 97447/97656 [10:41:47<00:21,  9.92it/s]100%|█████████▉| 97448/97656 [10:41:47<00:20,  9.93it/s]100%|█████████▉| 97449/97656 [10:41:47<00:20,  9.94it/s]100%|█████████▉| 97450/97656 [10:41:47<00:20,  9.94it/s]100%|█████████▉| 97451/97656 [10:41:47<00:20,  9.95it/s]100%|█████████▉| 97452/97656 [10:41:48<00:20,  9.94it/s]100%|█████████▉| 97453/97656 [10:41:48<00:20,  9.92it/s]100%|█████████▉| 97454/97656 [10:41:48<00:20,  9.92it/s]100%|█████████▉| 97455/97656 [10:41:48<00:20,  9.92it/s]100%|█████████▉| 97456/97656 [10:41:48<00:20,  9.92it/s]100%|█████████▉| 97457/97656 [10:41:48<00:20,  9.92it/s]100%|█████████▉| 97458/97656 [10:41:48<00:19,  9.92it/s]100%|█████████▉| 97459/97656 [10:41:48<00:19,  9.92it/s]100%|█████████▉| 97460/97656 [10:41:48<00:19,  9.93it/s]100%|█████████▉| 97461/97656 [10:41:48<00:19,  9.93it/s]100%|█████████▉| 97462/97656 [10:41:49<00:19,  9.92it/s]100%|█████████▉| 97463/97656 [10:41:49<00:19,  9.93it/s]100%|█████████▉| 97464/97656 [10:41:49<00:19,  9.94it/s]100%|█████████▉| 97465/97656 [10:41:49<00:19,  9.94it/s]100%|█████████▉| 97466/97656 [10:41:49<00:19,  9.93it/s]100%|█████████▉| 97467/97656 [10:41:49<00:19,  9.93it/s]100%|█████████▉| 97468/97656 [10:41:49<00:18,  9.93it/s]100%|█████████▉| 97469/97656 [10:41:49<00:18,  9.93it/s]100%|█████████▉| 97470/97656 [10:41:49<00:18,  9.94it/s]100%|█████████▉| 97471/97656 [10:41:49<00:18,  9.94it/s]100%|█████████▉| 97472/97656 [10:41:50<00:18,  9.95it/s]100%|█████████▉| 97473/97656 [10:41:50<00:18,  9.93it/s]100%|█████████▉| 97474/97656 [10:41:50<00:18,  9.92it/s]100%|█████████▉| 97475/97656 [10:41:50<00:18,  9.93it/s]100%|█████████▉| 97476/97656 [10:41:50<00:18,  9.93it/s]100%|█████████▉| 97477/97656 [10:41:50<00:18,  9.93it/s]100%|█████████▉| 97478/97656 [10:41:50<00:17,  9.94it/s]100%|█████████▉| 97479/97656 [10:41:50<00:17,  9.93it/s]100%|█████████▉| 97480/97656 [10:41:50<00:17,  9.93it/s]100%|█████████▉| 97481/97656 [10:41:50<00:17,  9.93it/s]100%|█████████▉| 97482/97656 [10:41:51<00:17,  9.93it/s]100%|█████████▉| 97483/97656 [10:41:51<00:17,  9.92it/s]100%|█████████▉| 97484/97656 [10:41:51<00:17,  9.93it/s]100%|█████████▉| 97485/97656 [10:41:51<00:17,  9.94it/s]100%|█████████▉| 97486/97656 [10:41:51<00:17,  9.93it/s]100%|█████████▉| 97487/97656 [10:41:51<00:17,  9.94it/s]100%|█████████▉| 97488/97656 [10:41:51<00:16,  9.94it/s]100%|█████████▉| 97489/97656 [10:41:51<00:16,  9.93it/s]100%|█████████▉| 97490/97656 [10:41:51<00:16,  9.93it/s]100%|█████████▉| 97491/97656 [10:41:51<00:16,  9.94it/s]100%|█████████▉| 97492/97656 [10:41:52<00:16,  9.94it/s]100%|█████████▉| 97493/97656 [10:41:52<00:16,  9.93it/s]100%|█████████▉| 97494/97656 [10:41:52<00:16,  9.93it/s]100%|█████████▉| 97495/97656 [10:41:52<00:16,  9.94it/s]100%|█████████▉| 97496/97656 [10:41:52<00:16,  9.93it/s]100%|█████████▉| 97497/97656 [10:41:52<00:16,  9.93it/s]100%|█████████▉| 97498/97656 [10:41:52<00:15,  9.93it/s]100%|█████████▉| 97499/97656 [10:41:52<00:15,  9.93it/s]100%|█████████▉| 97500/97656 [10:41:52<00:15,  9.94it/s]100%|█████████▉| 97501/97656 [10:41:52<00:15,  9.95it/s]100%|█████████▉| 97502/97656 [10:41:53<00:15,  9.95it/s]100%|█████████▉| 97503/97656 [10:41:53<00:15,  9.96it/s]100%|█████████▉| 97504/97656 [10:41:53<00:15,  9.96it/s]100%|█████████▉| 97505/97656 [10:41:53<00:15,  9.95it/s]100%|█████████▉| 97506/97656 [10:41:53<00:15,  9.95it/s]100%|█████████▉| 97507/97656 [10:41:53<00:15,  9.88it/s]100%|█████████▉| 97508/97656 [10:41:53<00:15,  9.86it/s]100%|█████████▉| 97509/97656 [10:41:53<00:14,  9.89it/s]100%|█████████▉| 97510/97656 [10:41:53<00:14,  9.90it/s]100%|█████████▉| 97511/97656 [10:41:53<00:14,  9.92it/s]100%|█████████▉| 97512/97656 [10:41:54<00:14,  9.91it/s]100%|█████████▉| 97513/97656 [10:41:54<00:14,  9.91it/s]100%|█████████▉| 97514/97656 [10:41:54<00:14,  9.91it/s]100%|█████████▉| 97515/97656 [10:41:54<00:14,  9.92it/s]100%|█████████▉| 97516/97656 [10:41:54<00:14,  9.92it/s]100%|█████████▉| 97517/97656 [10:41:54<00:14,  9.92it/s]100%|█████████▉| 97518/97656 [10:41:54<00:13,  9.92it/s]100%|█████████▉| 97519/97656 [10:41:54<00:13,  9.93it/s]100%|█████████▉| 97520/97656 [10:41:54<00:13,  9.93it/s]100%|█████████▉| 97521/97656 [10:41:54<00:13,  9.93it/s]100%|█████████▉| 97522/97656 [10:41:55<00:13,  9.94it/s]100%|█████████▉| 97523/97656 [10:41:55<00:13,  9.94it/s]100%|█████████▉| 97524/97656 [10:41:55<00:13,  9.94it/s]100%|█████████▉| 97525/97656 [10:41:55<00:13,  9.92it/s]100%|█████████▉| 97526/97656 [10:41:55<00:13,  9.93it/s]100%|█████████▉| 97527/97656 [10:41:55<00:12,  9.94it/s]100%|█████████▉| 97528/97656 [10:41:55<00:12,  9.94it/s]100%|█████████▉| 97529/97656 [10:41:55<00:12,  9.94it/s]100%|█████████▉| 97530/97656 [10:41:55<00:12,  9.94it/s]100%|█████████▉| 97531/97656 [10:41:55<00:12,  9.94it/s]100%|█████████▉| 97532/97656 [10:41:56<00:12,  9.94it/s]100%|█████████▉| 97533/97656 [10:41:56<00:12,  9.94it/s]100%|█████████▉| 97534/97656 [10:41:56<00:12,  9.94it/s]100%|█████████▉| 97535/97656 [10:41:56<00:12,  9.93it/s]100%|█████████▉| 97536/97656 [10:41:56<00:12,  9.93it/s]100%|█████████▉| 97537/97656 [10:41:56<00:12,  9.91it/s]100%|█████████▉| 97538/97656 [10:41:56<00:11,  9.90it/s]100%|█████████▉| 97539/97656 [10:41:56<00:11,  9.90it/s]100%|█████████▉| 97540/97656 [10:41:56<00:11,  9.91it/s]100%|█████████▉| 97541/97656 [10:41:56<00:11,  9.92it/s]100%|█████████▉| 97542/97656 [10:41:57<00:11,  9.93it/s]100%|█████████▉| 97543/97656 [10:41:57<00:11,  9.92it/s]100%|█████████▉| 97544/97656 [10:41:57<00:11,  9.90it/s]100%|█████████▉| 97545/97656 [10:41:57<00:11,  9.90it/s]100%|█████████▉| 97546/97656 [10:41:57<00:11,  9.91it/s]100%|█████████▉| 97547/97656 [10:41:57<00:10,  9.91it/s]100%|█████████▉| 97548/97656 [10:41:57<00:10,  9.88it/s]100%|█████████▉| 97549/97656 [10:41:57<00:10,  9.88it/s]100%|█████████▉| 97550/97656 [10:41:57<00:10,  9.89it/s]100%|█████████▉| 97551/97656 [10:41:57<00:10,  9.91it/s]100%|█████████▉| 97552/97656 [10:41:58<00:10,  9.92it/s]100%|█████████▉| 97553/97656 [10:41:58<00:10,  9.91it/s]100%|█████████▉| 97554/97656 [10:41:58<00:10,  9.90it/s]100%|█████████▉| 97555/97656 [10:41:58<00:10,  9.91it/s]100%|█████████▉| 97556/97656 [10:41:58<00:10,  9.92it/s]100%|█████████▉| 97557/97656 [10:41:58<00:09,  9.93it/s]100%|█████████▉| 97558/97656 [10:41:58<00:09,  9.93it/s]100%|█████████▉| 97559/97656 [10:41:58<00:09,  9.93it/s]100%|█████████▉| 97560/97656 [10:41:58<00:09,  9.93it/s]100%|█████████▉| 97561/97656 [10:41:59<00:09,  9.93it/s]100%|█████████▉| 97562/97656 [10:41:59<00:09,  9.93it/s]100%|█████████▉| 97563/97656 [10:41:59<00:09,  9.93it/s]100%|█████████▉| 97564/97656 [10:41:59<00:09,  9.94it/s]100%|█████████▉| 97565/97656 [10:41:59<00:09,  9.94it/s]100%|█████████▉| 97566/97656 [10:41:59<00:09,  9.94it/s]100%|█████████▉| 97567/97656 [10:41:59<00:08,  9.94it/s]100%|█████████▉| 97568/97656 [10:41:59<00:08,  9.94it/s]100%|█████████▉| 97569/97656 [10:41:59<00:08,  9.93it/s]100%|█████████▉| 97570/97656 [10:41:59<00:08,  9.94it/s]100%|█████████▉| 97571/97656 [10:42:00<00:08,  9.93it/s]100%|█████████▉| 97572/97656 [10:42:00<00:08,  9.93it/s]100%|█████████▉| 97573/97656 [10:42:00<00:08,  9.94it/s]100%|█████████▉| 97574/97656 [10:42:00<00:08,  9.94it/s]100%|█████████▉| 97575/97656 [10:42:00<00:08,  9.95it/s]100%|█████████▉| 97576/97656 [10:42:00<00:08,  9.94it/s]100%|█████████▉| 97577/97656 [10:42:00<00:07,  9.94it/s]100%|█████████▉| 97578/97656 [10:42:00<00:07,  9.93it/s]100%|█████████▉| 97579/97656 [10:42:00<00:07,  9.94it/s]100%|█████████▉| 97580/97656 [10:42:00<00:07,  9.94it/s]100%|█████████▉| 97581/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97582/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97583/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97584/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97585/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97586/97656 [10:42:01<00:07,  9.94it/s]100%|█████████▉| 97587/97656 [10:42:01<00:06,  9.95it/s]100%|█████████▉| 97588/97656 [10:42:01<00:06,  9.95it/s]100%|█████████▉| 97589/97656 [10:42:01<00:06,  9.95it/s]100%|█████████▉| 97590/97656 [10:42:01<00:06,  9.94it/s]100%|█████████▉| 97591/97656 [10:42:02<00:06,  9.94it/s]100%|█████████▉| 97592/97656 [10:42:02<00:06,  9.94it/s]100%|█████████▉| 97593/97656 [10:42:02<00:06,  9.94it/s]100%|█████████▉| 97594/97656 [10:42:02<00:06,  9.94it/s]100%|█████████▉| 97595/97656 [10:42:02<00:06,  9.95it/s]100%|█████████▉| 97596/97656 [10:42:02<00:06,  9.94it/s]100%|█████████▉| 97597/97656 [10:42:02<00:05,  9.93it/s]100%|█████████▉| 97598/97656 [10:42:02<00:05,  9.93it/s]100%|█████████▉| 97599/97656 [10:42:02<00:05,  9.93it/s]100%|█████████▉| 97600/97656 [10:42:02<00:05,  9.93it/s]100%|█████████▉| 97601/97656 [10:42:03<00:05,  9.92it/s]100%|█████████▉| 97602/97656 [10:42:03<00:05,  9.93it/s]100%|█████████▉| 97603/97656 [10:42:03<00:05,  9.94it/s]100%|█████████▉| 97604/97656 [10:42:03<00:05,  9.94it/s]100%|█████████▉| 97605/97656 [10:42:03<00:05,  9.94it/s]100%|█████████▉| 97606/97656 [10:42:03<00:05,  9.94it/s]100%|█████████▉| 97607/97656 [10:42:03<00:04,  9.95it/s]100%|█████████▉| 97608/97656 [10:42:03<00:04,  9.95it/s]100%|█████████▉| 97609/97656 [10:42:03<00:04,  9.94it/s]100%|█████████▉| 97610/97656 [10:42:03<00:04,  9.94it/s]100%|█████████▉| 97611/97656 [10:42:04<00:04,  9.94it/s]100%|█████████▉| 97612/97656 [10:42:04<00:04,  9.93it/s]100%|█████████▉| 97613/97656 [10:42:04<00:04,  9.94it/s]100%|█████████▉| 97614/97656 [10:42:04<00:04,  9.93it/s]100%|█████████▉| 97615/97656 [10:42:04<00:04,  9.93it/s]100%|█████████▉| 97616/97656 [10:42:04<00:04,  9.93it/s]100%|█████████▉| 97617/97656 [10:42:04<00:03,  9.92it/s]100%|█████████▉| 97618/97656 [10:42:04<00:03,  9.93it/s]100%|█████████▉| 97619/97656 [10:42:04<00:03,  9.93it/s]100%|█████████▉| 97620/97656 [10:42:04<00:03,  9.93it/s]100%|█████████▉| 97621/97656 [10:42:05<00:03,  9.93it/s]100%|█████████▉| 97622/97656 [10:42:05<00:03,  9.93it/s]100%|█████████▉| 97623/97656 [10:42:05<00:03,  9.93it/s]100%|█████████▉| 97624/97656 [10:42:05<00:03,  9.94it/s]100%|█████████▉| 97625/97656 [10:42:05<00:03,  9.95it/s]100%|█████████▉| 97626/97656 [10:42:05<00:03,  9.95it/s]100%|█████████▉| 97627/97656 [10:42:05<00:02,  9.94it/s]100%|█████████▉| 97628/97656 [10:42:05<00:02,  9.94it/s]100%|█████████▉| 97629/97656 [10:42:05<00:02,  9.94it/s]100%|█████████▉| 97630/97656 [10:42:05<00:02,  9.94it/s]100%|█████████▉| 97631/97656 [10:42:06<00:02,  9.93it/s]100%|█████████▉| 97632/97656 [10:42:06<00:02,  9.94it/s]100%|█████████▉| 97633/97656 [10:42:06<00:02,  9.95it/s]100%|█████████▉| 97634/97656 [10:42:06<00:02,  9.94it/s]100%|█████████▉| 97635/97656 [10:42:06<00:02,  9.94it/s]100%|█████████▉| 97636/97656 [10:42:06<00:02,  9.94it/s]100%|█████████▉| 97637/97656 [10:42:06<00:01,  9.94it/s]100%|█████████▉| 97638/97656 [10:42:06<00:01,  9.93it/s]100%|█████████▉| 97639/97656 [10:42:06<00:01,  9.94it/s]100%|█████████▉| 97640/97656 [10:42:06<00:01,  9.94it/s]100%|█████████▉| 97641/97656 [10:42:07<00:01,  9.95it/s]100%|█████████▉| 97642/97656 [10:42:07<00:01,  9.94it/s]100%|█████████▉| 97643/97656 [10:42:07<00:01,  9.94it/s]100%|█████████▉| 97644/97656 [10:42:07<00:01,  9.94it/s]100%|█████████▉| 97645/97656 [10:42:07<00:01,  9.95it/s]100%|█████████▉| 97646/97656 [10:42:07<00:01,  9.94it/s]100%|█████████▉| 97647/97656 [10:42:07<00:00,  9.94it/s]100%|█████████▉| 97648/97656 [10:42:07<00:00,  9.94it/s]100%|█████████▉| 97649/97656 [10:42:07<00:00,  9.95it/s]100%|█████████▉| 97650/97656 [10:42:07<00:00,  9.95it/s]Note: Environment variable`HF_TOKEN` is set and is the current active token independently from the token you've just configured.
+[2025-12-08 13:20:45,675][httpx][INFO] - HTTP Request: POST https://huggingface.co/api/repos/create "HTTP/1.1 409 Conflict"
+[2025-12-08 13:20:45,722][httpx][INFO] - HTTP Request: POST https://huggingface.co/api/validate-yaml "HTTP/1.1 200 OK"
+[2025-12-08 13:20:46,608][httpx][INFO] - HTTP Request: POST https://huggingface.co/api/models/khurramkhalil/STEER_PAPER_REPRO/preupload/main "HTTP/1.1 200 OK"
+[2025-12-08 13:20:46,680][httpx][INFO] - HTTP Request: POST https://huggingface.co/khurramkhalil/STEER_PAPER_REPRO.git/info/lfs/objects/batch "HTTP/1.1 200 OK"
+[2025-12-08 13:20:46,730][httpx][INFO] - HTTP Request: GET https://huggingface.co/api/models/khurramkhalil/STEER_PAPER_REPRO/xet-write-token/main "HTTP/1.1 200 OK"
+Processing Files (0 / 0)      : |          |  0.00B /  0.00B            
+New Data Upload               : |          |  0.00B /  0.00B            [A
+
+  ...h_lambda_repro/step_33201: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_11718: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_25389: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_13671: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_19530: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...gh_lambda_repro/step_1953: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_41013: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_17577: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_37107: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_56637: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[A
+
+  ...h_lambda_repro/step_33201: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_11718: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_25389: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_13671: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_19530: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...gh_lambda_repro/step_1953: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_41013: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_17577: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_37107: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  [+ 14 files]                :  88%|████████▊ |  266MB /  302MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (16 / 24)    :  44%|████▍     |  448MB / 1.01GB,   ???B/s  
+
+  ...h_lambda_repro/step_50778: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_52731: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_54684: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_39060: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_44919: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_46872: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_68355: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_64449: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_66402: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  [+ 20 files]                :  91%|█████████ |  384MB /  423MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (40 / 44)    :  84%|████████▍ |  847MB / 1.01GB, 1.99GB/s  
+
+  ...h_lambda_repro/step_21483: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_23436: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_70308: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_80073: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_78120: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_76167: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  [+ 5 files]                 : 100%|██████████|  121MB /  121MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (49 / 49)    :  98%|█████████▊|  986MB / 1.01GB, 1.35GB/s  
+
+  ...h_lambda_repro/step_76167: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[A
+
+  ...h_lambda_repro/step_76167: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  [+ 1 files]                 :  57%|█████▋    | 22.9MB / 40.3MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (49 / 50)    :  98%|█████████▊|  989MB / 1.01GB,  677MB/s  
+New Data Upload               :  14%|█▎        | 2.76MB / 20.1MB, 3.45MB/s  [A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650:  99%|█████████▊| 19.9MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (49 / 50)    : 100%|█████████▉| 1.01GB / 1.01GB,  558MB/s  
+New Data Upload               :  99%|█████████▊| 19.9MB / 20.1MB, 19.9MB/s  [A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650:  99%|█████████▊| 19.9MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (50 / 50)    : 100%|██████████| 1.01GB / 1.01GB,  399MB/s  
+New Data Upload               : 100%|██████████| 20.1MB / 20.1MB, 14.4MB/s  [A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[A
+
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            [A[A
+
+
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            [A[A[A
+
+
+
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A
+
+
+
+
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A
+
+
+
+
+
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A
+
+
+
+
+
+
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  ...h_lambda_repro/step_97650: 100%|██████████| 20.1MB / 20.1MB            [A[A[A[A[A[A[A[A[A[A[AProcessing Files (50 / 50)    : 100%|██████████| 1.01GB / 1.01GB,  310MB/s  
+New Data Upload               : 100%|██████████| 20.1MB / 20.1MB, 11.2MB/s  
+  ...h_lambda_repro/step_82026: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_83979: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_85932: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_89838: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_87885: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_95697: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_91791: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_93744: 100%|██████████| 20.1MB / 20.1MB            
+  ...gh_lambda_repro/step_9765: 100%|██████████| 20.1MB / 20.1MB            
+  ...h_lambda_repro/step_97650: 100%|██████████| 20.1MB / 20.1MB            
+[2025-12-08 13:20:49,339][httpx][INFO] - HTTP Request: POST https://huggingface.co/api/models/khurramkhalil/STEER_PAPER_REPRO/commit/main "HTTP/1.1 200 OK"
+Uploaded checkpoint to HF Hub: khurramkhalil/STEER_PAPER_REPRO
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log
+wandb: 
+wandb: Run history:
+wandb:            num_params ▁
+wandb:        train/accuracy ▄▁▃▄▃▂▆▇▆▃▇▄▇▅▅▇▅▆▆▂▂▅▇▅▄█▆▄▆▃▅▇▄▅▄▆▆▅▄▇
+wandb:           train/count ▁███████████████████████████████████████
+wandb:  train/exact_accuracy ▁▂▄▃▂▃▃▅▂▅▁▂▁▇▃▄▅█▃▃▁▅█▅▄▅▅▆▄▆▆▅▆▂▆▁▆▄▂▅
+wandb:         train/lm_loss █▁▁▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:              train/lr ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: train/q_halt_accuracy ████▅█▆▂▅█▇██▁█▆█▆█▇███▆▆█▆▅█▆█▇▆▆█▇█▄██
+wandb:     train/q_halt_loss ▃▂▄▁▁▁▁▂▁▁▁▁▁▂▃▂▁▂▁▁▂▁▁▁▁▁▁▂▁▁▂▁▂▂▁▁█▁▁▂
+wandb:           train/steps ▁█▇▇▆▇▇▇▆▇▆▇▇▇▇▇▇▇▆▆▇▆▆▇▇▇▆▇▆▆▆▇▇▇▇▆▆▆▆█
+wandb: 
+wandb: Run summary:
+wandb:            num_params 5028866
+wandb:        train/accuracy 0.74925
+wandb:           train/count 1
+wandb:  train/exact_accuracy 0.15556
+wandb:         train/lm_loss 0.76475
+wandb:              train/lr 0.0004
+wandb: train/q_halt_accuracy 0.97778
+wandb:     train/q_halt_loss 0.00672
+wandb:           train/steps 14.31111
+wandb: 
+wandb: 🚀 View run steer_full_run_high_lambda_repro at: https://wandb.ai/khurramkhalil/STEER_PAPER_REPRO/runs/bhqciej0
+wandb: ⭐️ View project at: https://wandb.ai/khurramkhalil/STEER_PAPER_REPRO
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20251208_022859-bhqciej0/logs
+100%|█████████▉| 97650/97656 [10:51:52<00:02,  2.50it/s]

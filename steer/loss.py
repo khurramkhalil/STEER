@@ -69,13 +69,52 @@ class STEERLoss(nn.Module):
         
         total_loss = loss_improve + loss_valid + loss_converge
         
-        metrics = {
-            "steer/loss": total_loss.detach(),
-            "steer/rho_improve": robustness["rho_improve"].mean().detach(),
-            "steer/rho_valid": robustness["rho_valid"].mean().detach(),
-            "steer/rho_converge": robustness["rho_converge"].mean().detach(),
-            "steer/viol_final": violations[:, -1].mean().detach(),
-            "steer/prog_final": progress[:, -1].mean().detach(),
-        }
+        # --- Publication Metrics (No Grad) ---
+        with torch.no_grad():
+            # 1. Trajectory Analysis (Step-wise)
+            # violations: (batch, steps)
+            for t in range(steps):
+                metrics[f"steer/viol_step_{t}"] = violations[:, t].mean()
+                metrics[f"steer/prog_step_{t}"] = progress[:, t].mean()
+                if t > 0:
+                    metrics[f"steer/stab_step_{t}"] = stability[:, t].mean()
+
+            # 2. Validity Rate (Final Step)
+            # Check if violations are effectively zero (< 0.01)
+            is_valid = (violations[:, -1] < 0.01).float()
+            metrics["steer/validity_rate"] = is_valid.mean()
+
+            # 3. Convergence Step
+            # Find first step where stability remains low for all subsequent steps
+            # This is complex to define perfectly, simplified: first step where stab < epsilon
+            # stability: (batch, steps)
+            # mask: (batch, steps) where stab < epsilon
+            stab_mask = (stability < self.properties.epsilon_stab)
+            # We want the first index where it becomes stable and STAYS stable? 
+            # For now, just first step < epsilon is a good proxy for "settling"
+            # Note: stability[:, 0] is 0 by definition, so ignore t=0
+            if steps > 1:
+                # (batch, steps-1)
+                valid_stab = stab_mask[:, 1:]
+                # argmax gives first index of True, but if all False it gives 0.
+                # We need to handle "never converged" case.
+                # Add a column of True at the end to ensure we find an index
+                sentinel = torch.ones(batch_size, 1, device=trajectory.device, dtype=torch.bool)
+                valid_stab_ext = torch.cat([valid_stab, sentinel], dim=1)
+                converged_idx = torch.argmax(valid_stab_ext.int(), dim=1) + 1 # +1 because we skipped t=0
+                
+                # If index is steps-1 (the sentinel), it implies it never converged before the end
+                # We can filter those out or just report mean
+                metrics["steer/convergence_step"] = converged_idx.float().mean()
+                metrics["steer/compute_savings"] = 1.0 - (converged_idx.float().mean() / steps)
+
+            metrics.update({
+                "steer/loss": total_loss.detach(),
+                "steer/rho_improve": robustness["rho_improve"].mean().detach(),
+                "steer/rho_valid": robustness["rho_valid"].mean().detach(),
+                "steer/rho_converge": robustness["rho_converge"].mean().detach(),
+                "steer/viol_final": violations[:, -1].mean().detach(),
+                "steer/prog_final": progress[:, -1].mean().detach(),
+            })
         
         return total_loss, metrics
