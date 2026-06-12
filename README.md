@@ -11,31 +11,16 @@ Recursive reasoning models like TRM demonstrate that small networks can solve co
 2.  **Stability Regularization (`epsilon_stab`)**: Penalizes erratic fluctuations in the latent state between recursive steps.
 3.  **Halting Efficiency**: Encourages the model to terminate recursion as soon as a correct answer is confidently reached, saving compute.
 
-By balancing these factors via `steer_lambda`, we achieve higher accuracy and better compute efficiency than baseline recursive models.
+By balancing these factors via `steer_lambda`, STEER aims to improve accuracy and
+compute efficiency over baseline recursive models.
 
 ## Results
 
-### Sudoku-Extreme Benchmark
-
-**Grokking Regime** (1,000 puzzles, 50,000 epochs, no augmentation):
-
-| Method | `steer_lambda` | Val Exact Acc ↑ | Train Exact Acc |
-| :--- | :---: | :---: | :---: |
-| TRM Baseline | 0.0 | 8.68% | 100.00% |
-| STEER (low) | 0.01 | 7.82% | 98.10% |
-| **STEER (mid)** | **0.1** | **17.27%** 🏆 | 97.38% |
-| STEER (high) | 1.0 | 16.42% | 94.36% |
-
-> STEER at `λ=0.1` achieves **+8.59pp** over the unregularized baseline, effectively doubling generalization capability on the small-data regime.
-
-**Generalization Regime** (1,000,000 augmented puzzles, 50,000 epochs):
-
-| Method | `steer_lambda` | Val Exact Acc ↑ | Val Cell Acc ↑ | Val LM Loss ↓ |
-| :--- | :---: | :---: | :---: | :---: |
-| TRM Baseline | 0.0 | 53.47% | 83.64% | 0.3858 |
-| **STEER (high)** | **1.0** | **53.84%** | **83.78%** | **0.3799** |
-
-> On augmented data, STEER maintains accuracy advantages and reduces validation loss, indicating higher quality reasoning trajectories.
+> **Results are being regenerated.** The numbers previously reported here were
+> produced before a fix to the STEER training path (the regularizer had been an
+> inadvertent no-op), so they are not valid. Verified multi-seed results
+> (mean ± std with significance tests) are in progress — see **Phase 2** in
+> [Tasks.md](Tasks.md). This section will be updated when they land.
 
 ## Requirements
 
@@ -127,15 +112,18 @@ from the experiment config. To run without a W&B account, set
 `WANDB_MODE=offline`. Key metrics are also printed to stdout every
 `log_interval` steps.
 
-## Key Hyperparameter Guidance
+## Key Hyperparameters
 
-| Hyperparameter | Recommended Value | Notes |
+| Hyperparameter | Default | Meaning |
 | :--- | :---: | :--- |
-| `steer_lambda` | 0.1 (small data) / 1.0 (large data) | Too low (0.01): no effect. Too high with tight ε: unstable. |
-| `steer_epsilon_viol` | 0.1 | Loose tolerance. Tight (0.01) causes NCCL crashes in DDP. |
-| `steer_epsilon_stab` | 0.01 | Fixed across all stable runs. |
-| `ema` | `True` | **Required**. Runs without EMA degrade by ~30% absolute. |
-| `global_batch_size` | 512 | Effective batch size across all GPUs. |
+| `steer_lambda` | `0.0` | Weight of the STEER regularizer (`0` disables it). |
+| `steer_epsilon_viol` | `0.1` | Tolerance for the path-validity property. |
+| `steer_epsilon_stab` | `0.01` | Convergence threshold for the stability property. |
+| `ema` / `ema_rate` | `False` / `0.999` | EMA of weights for evaluation (enabled in the experiment configs). |
+| `global_batch_size` | `512` | Effective batch size across all GPUs. |
+| `seed` / `deterministic` | `0` / `False` | RNG seed; deterministic cuDNN/cuBLAS kernels. |
+
+(Hyperparameter *recommendations* and sensitivity will be added with the Phase 2 / Phase 3 results.)
 
 ## Reference
 
