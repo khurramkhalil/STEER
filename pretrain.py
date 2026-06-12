@@ -423,9 +423,20 @@ def train_batch(config: PretrainConfig, train_state: TrainState, batch: Any, glo
             metric_values = metric_values.cpu().numpy()
             reduced_metrics = {k: metric_values[i] for i, k in enumerate(metric_keys)}
             
-            # Postprocess
+            # Postprocess. Task metrics are sums-over-examples (divide by the
+            # global count, or by global_batch_size for the *loss terms). STEER
+            # metrics are per-batch means, so `dist.reduce` summed one mean per
+            # rank -> recover the global mean by dividing by world_size.
             count = max(reduced_metrics["count"], 1)  # Avoid NaNs
-            reduced_metrics = {f"train/{k}": v / (global_batch_size if k.endswith("loss") else count) for k, v in reduced_metrics.items()}
+
+            def _normalize(key: str, value):
+                if key.startswith("steer/"):
+                    return value / world_size
+                if key.endswith("loss"):
+                    return value / global_batch_size
+                return value / count
+
+            reduced_metrics = {f"train/{k}": _normalize(k, v) for k, v in reduced_metrics.items()}
 
             reduced_metrics["train/lr"] = lr_this_step
             return reduced_metrics

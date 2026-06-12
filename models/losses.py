@@ -112,8 +112,10 @@ class ACTLossHead(nn.Module):
 
         # STEER regularization. Computed here (not post-hoc in the train loop) so
         # the trajectory still carries gradients -- a detached trajectory would
-        # make the regularizer a silent no-op.
-        if self.steer_loss_fn is not None and self.steer_lambda > 0 and "trajectory" in outputs:
+        # make the regularizer a silent no-op. Only applied in training mode: it
+        # is a training-time regularizer, and its per-batch-mean metrics do not
+        # fit the eval metric-aggregation pipeline (which assumes sums-over-examples).
+        if self.training and self.steer_loss_fn is not None and self.steer_lambda > 0 and "trajectory" in outputs:
             steer_loss, steer_metrics = self.steer_loss_fn(outputs["trajectory"])
             total_loss = total_loss + self.steer_lambda * steer_loss
             metrics.update(steer_metrics)

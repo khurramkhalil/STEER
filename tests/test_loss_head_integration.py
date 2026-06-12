@@ -69,6 +69,18 @@ def test_steer_disabled_emits_no_steer_metrics():
     assert not any(k.startswith("steer/") for k in metrics)
 
 
+def test_steer_skipped_in_eval_mode():
+    # STEER is a training-time regularizer; in eval mode it must not run (its
+    # per-batch-mean metrics do not fit the eval aggregation pipeline).
+    model = _FakeRecursiveModel()
+    head = ACTLossHead(model, "stablemax_cross_entropy", steer_loss_fn=STEERLoss(), steer_lambda=1.0)
+    head.eval()
+    _, loss, metrics, _, _ = head(return_keys=[], carry=None, batch=None)
+    assert not any(k.startswith("steer/") for k in metrics)
+    base_loss, _ = _run(steer_lambda=0.0)
+    assert torch.allclose(loss, base_loss, atol=1e-5)
+
+
 def test_steer_enabled_adds_to_total_loss():
     base_loss, _ = _run(steer_lambda=0.0)
     total_loss, metrics = _run(steer_lambda=1.0)
