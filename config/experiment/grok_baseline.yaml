@@ -1,0 +1,26 @@
+# @package _global_
+# Grokking regime (small data) -- unregularized TRM baseline.
+# Select with:  python pretrain.py experiment=grok_baseline
+
+data_paths: ["data/sudoku-extreme-1k-noaug"]
+evaluators: []
+
+epochs: 50000
+eval_interval: 200
+
+lr: 4e-4
+puzzle_emb_lr: 4e-4
+weight_decay: 1.0
+puzzle_emb_weight_decay: 1.0
+
+global_batch_size: 512
+ema: True
+
+steer_lambda: 0.0
+
+project_name: STEER_PAPER_EXACT
+run_name: grok_baseline
+
+arch:
+  mlp_t: True
+  pos_encodings: none

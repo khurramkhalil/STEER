@@ -88,6 +88,7 @@ class PretrainConfig(pydantic.BaseModel):
 
     # Extras
     seed: int = 0
+    deterministic: bool = False  # enable deterministic cuDNN/cuBLAS kernels (slower)
     checkpoint_every_eval: bool = False
     eval_interval: Optional[int] = None
     min_eval_interval: Optional[int] = 0 # when to start eval
@@ -632,6 +633,33 @@ def load_synced_config(hydra_config: DictConfig, rank: int, world_size: int) -> 
     return objects[0]  # type: ignore
 
 
+def seed_everything(seed: int, rank: int = 0, deterministic: bool = False):
+    """Seed all RNGs (python, numpy, torch) for reproducibility.
+
+    Each rank is seeded with ``seed + rank`` so per-rank stochasticity (data
+    sampling, dropout) differs but is reproducible; model parameters are
+    broadcast from rank 0, so this does not desync weights. When ``deterministic``
+    is set, also enable deterministic cuDNN/cuBLAS kernels (slower, bit-exact).
+    """
+    import random
+    import numpy as np
+
+    local_seed = seed + rank
+    random.seed(local_seed)
+    np.random.seed(local_seed)
+    torch.manual_seed(local_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(local_seed)
+    if deterministic:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        try:
+            torch.use_deterministic_algorithms(True, warn_only=True)
+        except Exception as exc:  # some ops lack deterministic impls
+            print(f"[seed] use_deterministic_algorithms not fully enabled: {exc}")
+
+
 @hydra.main(config_path="config", config_name="cfg_pretrain", version_base=None)
 def launch(hydra_config: DictConfig):
     RANK = 0
@@ -658,8 +686,8 @@ def launch(hydra_config: DictConfig):
     # Load sync'ed config
     config = load_synced_config(hydra_config, rank=RANK, world_size=WORLD_SIZE)
 
-    # Seed RNGs to ensure consistency
-    torch.random.manual_seed(config.seed + RANK)
+    # Seed all RNGs (python/numpy/torch) for reproducibility.
+    seed_everything(config.seed, rank=RANK, deterministic=config.deterministic)
 
     # Dataset
     train_epochs_per_iter = config.eval_interval if config.eval_interval is not None else config.epochs

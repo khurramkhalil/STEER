@@ -1,0 +1,28 @@
+# @package _global_
+# Generalization regime (1M augmented puzzles) -- STEER-regularized (lambda=1.0).
+# Select with:  python pretrain.py experiment=aug_steer
+
+data_paths: ["data/sudoku-extreme-1k-aug-1000"]
+evaluators: []
+
+epochs: 50000
+eval_interval: 1000
+
+lr: 4e-4
+puzzle_emb_lr: 4e-4
+weight_decay: 1.0
+puzzle_emb_weight_decay: 1.0
+
+global_batch_size: 512
+ema: True
+
+steer_lambda: 1.0
+steer_epsilon_viol: 0.1
+steer_epsilon_stab: 0.01
+
+project_name: STEER_PAPER_AUGMENTED
+run_name: aug_steer_L1.0_E0.1
+
+arch:
+  mlp_t: True
+  pos_encodings: none

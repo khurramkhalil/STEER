@@ -39,12 +39,16 @@ By balancing these factors via `steer_lambda`, we achieve higher accuracy and be
 
 ## Requirements
 
-- Python 3.10+
-- CUDA 12.6+
+The reproducible environment is the Docker image (see [Dockerfile](Dockerfile)),
+built on `pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel`. For a bare install that
+matches it:
+
+- Python 3.11 (the base image's Python)
+- CUDA 12.4
 
 ```bash
 pip install --upgrade pip wheel setuptools
-pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cu126
+pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 pip install --no-cache-dir --no-build-isolation adam-atan2==0.0.3
 wandb login YOUR-LOGIN
@@ -73,73 +77,55 @@ python dataset/build_sudoku_dataset.py --output-dir data/sudoku-extreme-1k-aug-1
 
 ## Usage & Experiments
 
-We provide specific configurations to reproduce our paper results on the **Sudoku-Extreme** benchmark.
+Each paper run is a named Hydra config in [config/experiment/](config/experiment/),
+so there is no long command line to copy. The available experiments:
 
-### 1. Best STEER Configuration (Grokking Regime — Small Data)
-*   **Dataset**: 1,000 original puzzles (no augmentation)
-*   **Val Exact Accuracy**: **~17.3%** (vs 8.7% baseline, **+8.6pp**)
-*   **Key Flag**: `ema=True` is **REQUIRED** for high performance.
+| Experiment | Regime | `steer_lambda` |
+| :--- | :--- | :---: |
+| `grok_baseline` | Small data (1k, no aug) | 0.0 |
+| `grok_steer` | Small data (1k, no aug) | 0.1 |
+| `aug_baseline` | Augmented (1M) | 0.0 |
+| `aug_steer` | Augmented (1M) | 1.0 |
 
-```bash
-torchrun --nproc_per_node=4 pretrain.py \
-  arch=trm \
-  data_paths="[data/sudoku-extreme-1k-noaug]" \
-  evaluators="[]" \
-  epochs=50000 eval_interval=200 \
-  lr=4e-4 puzzle_emb_lr=4e-4 weight_decay=1.0 puzzle_emb_weight_decay=1.0 \
-  arch.mlp_t=True arch.pos_encodings=none \
-  arch.L_layers=2 \
-  arch.H_cycles=3 arch.L_cycles=6 \
-  +steer_lambda=0.1 \
-  +steer_epsilon_viol=0.1 \
-  +steer_epsilon_stab=0.01 \
-  global_batch_size=512 \
-  +run_name="steer_grok_L0.1_E0.1" \
-  +project_name="STEER_PAPER_EXACT" \
-  ema=True
-```
+> `ema=True` is set in every experiment config and is **required** for good performance.
 
-### 2. Best STEER Configuration (Generalization Regime — Augmented Data)
-*   **Dataset**: 1,000,000 augmented puzzles
-*   **Val Exact Accuracy**: **~53.8%** (vs 53.5% baseline, +0.4pp; prior campaign achieved +5.3pp)
-*   **Key Flag**: `ema=True` is **REQUIRED** for high performance.
+### Run locally (single node)
 
 ```bash
-torchrun --nproc_per_node=4 pretrain.py \
-  arch=trm \
-  data_paths="[data/sudoku-extreme-1k-aug-1000]" \
-  evaluators="[]" \
-  epochs=50000 eval_interval=1000 \
-  lr=4e-4 puzzle_emb_lr=4e-4 weight_decay=1.0 puzzle_emb_weight_decay=1.0 \
-  arch.mlp_t=True arch.pos_encodings=none \
-  arch.L_layers=2 \
-  arch.H_cycles=3 arch.L_cycles=6 \
-  +steer_lambda=1.0 \
-  +steer_epsilon_viol=0.1 \
-  +steer_epsilon_stab=0.01 \
-  global_batch_size=512 \
-  +run_name="steer_gen_L1.0_E0.1" \
-  +project_name="STEER_PAPER_AUGMENTED" \
-  ema=True
+# builds the dataset if missing, then trains (1 GPU shown)
+scripts/run_local.sh grok_steer 0 1
 ```
 
-### 3. Unregularized Baseline (TRM)
+Or invoke Hydra directly (overrides on the CLI as usual):
+
 ```bash
-torchrun --nproc_per_node=4 pretrain.py \
-  arch=trm \
-  data_paths="[data/sudoku-extreme-1k-noaug]" \
-  evaluators="[]" \
-  epochs=50000 eval_interval=200 \
-  lr=4e-4 puzzle_emb_lr=4e-4 weight_decay=1.0 puzzle_emb_weight_decay=1.0 \
-  arch.mlp_t=True arch.pos_encodings=none \
-  arch.L_layers=2 \
-  arch.H_cycles=3 arch.L_cycles=6 \
-  +steer_lambda=0.0 \
-  global_batch_size=512 \
-  +run_name="baseline_no_steer" \
-  +project_name="STEER_PAPER_EXACT" \
-  ema=True
+torchrun --nproc_per_node=4 pretrain.py experiment=grok_steer seed=0
 ```
+
+### Run on the NRP (Nautilus) cluster
+
+```bash
+# one experiment, one seed
+scripts/launch_nrp.sh grok_steer 0          # exp, seed, [gpus], [image_tag]
+
+# a whole table (baseline + STEER, multiple seeds)
+scripts/reproduce.sh grok 3                  # grok_{baseline,steer} x seeds 0..2
+```
+
+The container image is built and pushed from Brev:
+
+```bash
+# on Brev (CPU box) -- builds and pushes khurramkhalil/steer:latest
+docker build -t khurramkhalil/steer:latest . && docker push khurramkhalil/steer:latest
+```
+
+Datasets are built reproducibly (the builder is seeded via `--seed`). To build
+them by hand, see **Dataset Preparation** above.
+
+**Logging.** Runs log to Weights & Biases using the `project_name`/`run_name`
+from the experiment config. To run without a W&B account, set
+`WANDB_MODE=offline`. Key metrics are also printed to stdout every
+`log_interval` steps.
 
 ## Key Hyperparameter Guidance
 

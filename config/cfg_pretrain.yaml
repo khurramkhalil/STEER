@@ -3,6 +3,7 @@
 defaults:
   - arch: trm
   - _self_
+  - experiment: null   # selectable per-paper experiment (see config/experiment/)
 
 hydra:
   output_subdir: null
@@ -35,9 +36,15 @@ puzzle_emb_weight_decay: 0.1
 puzzle_emb_lr: 1e-2
 
 seed: 0
+deterministic: False # enable deterministic cuDNN/cuBLAS kernels (slower, bit-exact)
 min_eval_interval: 0 # when to start the eval
 log_interval: 50 # stdout metric print cadence (in steps)
 
 ema: False # use Exponential-Moving-Average
 ema_rate: 0.999 # EMA-rate
 freeze_weights: False # If True, freeze weights and only learn the embeddings
+
+# STEER regularization (lambda=0 disables it; see steer/ and config/experiment/)
+steer_lambda: 0.0
+steer_epsilon_viol: 0.1
+steer_epsilon_stab: 0.01

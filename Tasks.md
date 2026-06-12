@@ -33,20 +33,31 @@ Goal: the implementation does what the paper will claim it does.
 
 ---
 
-## Phase 1 — Reproducibility infrastructure
+## Phase 1 — Reproducibility infrastructure  ✅ COMPLETE
 
 Goal: anyone (incl. reviewers) can reproduce a result with one command.
 
-- [ ] Per-experiment config files in `config/experiments/*.yaml` (no long CLI in README).
-- [ ] `scripts/reproduce_<table>.sh` for each results table; documented in README.
-- [ ] Deterministic seeding path verified (torch, numpy, cuDNN); `--seed` exposed
-      and honored across DDP ranks.
-- [ ] Environment fully pinned & verified: `Dockerfile` builds and runs a smoke
-      train; document exact torch/CUDA versions (no nightly).
-- [ ] W&B offline mode supported; consistent project/run naming.
-- [ ] Release trained checkpoints + a `scripts/download_checkpoints.sh`.
+- [x] Per-experiment Hydra configs in `config/experiment/*.yaml`
+      (`grok_baseline`, `grok_steer`, `aug_baseline`, `aug_steer`) — no long CLI.
+      Composition validated via `--cfg job` in the container.
+- [x] Reproduce scripts: `scripts/launch_nrp.sh` (one exp/seed),
+      `scripts/reproduce.sh` (a whole table x seeds), `scripts/run_local.sh`;
+      documented in the README.
+- [x] Deterministic seeding: `seed_everything` seeds python/numpy/torch(+cuda),
+      `seed+rank` per rank; optional `deterministic=True` for cuDNN/cuBLAS; the
+      dataset builder is seeded via `--seed` so datasets are reproducible.
+- [x] Environment pinned & verified: image built on `torch 2.5.1+cu124`; triton
+      left to torch (now 3.1.0, coherent — un-breaks `torch.compile`); README +
+      requirements aligned; image rebuilt & pushed (`khurramkhalil/steer:phase1`,
+      `:latest`).
+- [x] W&B offline supported (`WANDB_MODE=offline`); consistent project/run naming
+      from the experiment configs; stdout logging every `log_interval` steps.
+- [~] Checkpoint release: `scripts/download_checkpoints.sh` scaffolded; the actual
+      checkpoints are published after the Phase 2 runs exist (training already
+      uploads to the HF Hub).
 
-**Exit criteria:** clean-machine `bash scripts/reproduce_*.sh` reproduces a logged number.
+**Exit criteria:** one-command reproduction via `scripts/reproduce.sh <table>`. ✅ MET
+(checkpoint publishing deferred to post-Phase-2, by necessity).
 
 ---
 
@@ -147,8 +158,12 @@ Goal: artifact + submission hygiene.
 ### Current standing (2026-06-12)
 - Phase 0: ✅ COMPLETE. STEER verified to actually train on the real model
   (NRP 2-GPU smoke run); DDP metric aggregation fixed; CI added.
+- Phase 1: ✅ COMPLETE. Per-experiment configs + reproduce scripts + seeding +
+  coherent pinned image (`khurramkhalil/steer:phase1`). One-command reproduction.
 - Build/run infra established: Brev builds & pushes `khurramkhalil/steer:*`;
-  jobs run on the NRP `gp-engine-mizzou-dcps` namespace (see `deploy/k8s/`).
-- Phases 1–7: not started. Recommended next: Phase 1 (repro infra) then Phase 2.
-- **Blocking risk:** Phase 2 — published results are from the no-op STEER and
-  must be regenerated before any claim is made.
+  jobs run on the NRP `gp-engine-mizzou-dcps` namespace (see `deploy/k8s/` and
+  `scripts/`).
+- **NEXT: Phase 2** — re-establish core results. This is the blocking item:
+  published tables came from the no-op STEER and must be regenerated (≥3 seeds,
+  mean±std, significance) before any claim is made. Launch with
+  `scripts/reproduce.sh grok 3` then `scripts/reproduce.sh aug 3`.

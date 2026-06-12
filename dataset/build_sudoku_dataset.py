@@ -22,6 +22,7 @@ class DataProcessConfig(BaseModel):
     subsample_size: Optional[int] = None
     min_difficulty: Optional[int] = None
     num_aug: int = 0
+    seed: int = 0  # seeds subsampling + augmentation for reproducible datasets
 
 
 def shuffle_sudoku(board: np.ndarray, solution: np.ndarray):
@@ -159,6 +160,8 @@ def convert_subset(set_name: str, config: DataProcessConfig):
 
 @cli.command(singleton=True)
 def preprocess_data(config: DataProcessConfig):
+    # Seed so subsampling and augmentation are reproducible across builds.
+    np.random.seed(config.seed)
     convert_subset("train", config)
     convert_subset("test", config)
 
