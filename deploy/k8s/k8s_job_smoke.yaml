@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: steer-smoke-phase0
+  namespace: gp-engine-mizzou-dcps
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: steer-smoke-phase0
+    spec:
+      restartPolicy: Never
+      # Request A100 GPUs (>=24GB VRAM)
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.product
+                operator: In
+                values:
+                - NVIDIA-A100-SXM4-80GB
+                - NVIDIA-A100-80GB-PCIe
+      tolerations:
+      - key: "nautilus.io/reservation"
+        operator: "Equal"
+        value: "mizzou"
+        effect: "NoSchedule"
+      containers:
+      - name: steer-smoke
+        image: khurramkhalil/steer:phase0
+        imagePullPolicy: Always
+        workingDir: /workspace/STEER
+        # Phase 0 smoke test: build the small dataset, then run a short (~100-step)
+        # 2-GPU training with STEER enabled. Confirms (a) steer/* metrics log,
+        # (b) steer/loss is nonzero and trends down, (c) DDP metric path works.
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            set -e
+            echo "Generating dataset..."
+            python dataset/build_sudoku_dataset.py --output-dir data/sudoku-extreme-1k-noaug --subsample-size 1000 --num-aug 0
+            echo "Starting SMOKE training (steer_lambda=0.1, 2 GPUs)..."
+            torchrun --nproc_per_node=2 pretrain.py \
+              arch=trm \
+              data_paths="[data/sudoku-extreme-1k-noaug]" \
+              evaluators="[]" \
+              epochs=50 eval_interval=50 \
+              lr=4e-4 puzzle_emb_lr=4e-4 weight_decay=1.0 puzzle_emb_weight_decay=1.0 \
+              arch.mlp_t=True arch.pos_encodings=none \
+              arch.L_layers=2 \
+              arch.H_cycles=3 arch.L_cycles=6 \
+              +steer_lambda=0.1 \
+              +steer_epsilon_viol=0.1 \
+              +steer_epsilon_stab=0.01 \
+              global_batch_size=512 \
+              +log_interval=10 \
+              +run_name="smoke_phase0_L0.1" \
+              +project_name="STEER_SMOKE" \
+              ema=True
+        resources:
+          requests:
+            nvidia.com/a100: 2
+            memory: "32Gi"
+            cpu: "16"
+          limits:
+            nvidia.com/a100: 2
+            memory: "32Gi"
+            cpu: "16"
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: DISABLE_COMPILE        # skip torch.compile for a fast, robust smoke run
+          value: "1"
+        - name: WANDB_MODE             # keep the smoke run self-contained (no external logging)
+          value: "offline"
+        - name: NCCL_P2P_DISABLE
+          value: "1"
+        - name: NCCL_DEBUG
+          value: "WARN"
+        envFrom:
+        - secretRef:
+            name: steer-secrets
+        # Shared memory for PyTorch DDP
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory

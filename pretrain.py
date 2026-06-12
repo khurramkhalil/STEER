@@ -92,6 +92,7 @@ class PretrainConfig(pydantic.BaseModel):
     eval_interval: Optional[int] = None
     min_eval_interval: Optional[int] = 0 # when to start eval
     eval_save_outputs: List[str] = []
+    log_interval: int = 50  # stdout metric print cadence (in steps)
 
     ema: bool = False # use Exponential-Moving-Average
     ema_rate: float = 0.999 # EMA-rate
@@ -720,6 +721,14 @@ def launch(hydra_config: DictConfig):
             if RANK == 0 and metrics is not None:
                 wandb.log(metrics, step=train_state.step)
                 progress_bar.update(train_state.step - progress_bar.n)  # type: ignore
+                if train_state.step % config.log_interval == 0:
+                    compact = " ".join(
+                        f"{k.replace('train/', '')}={float(v):.4f}"
+                        for k, v in sorted(metrics.items())
+                        if k in ("train/lm_loss", "train/exact_accuracy", "train/accuracy")
+                        or k.startswith("train/steer/")
+                    )
+                    print(f"[step {train_state.step}] {compact}", flush=True)
             if config.ema:
                 ema_helper.update(train_state.model)
 
