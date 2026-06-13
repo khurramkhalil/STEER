@@ -37,6 +37,7 @@ puzzle_emb_lr: 1e-2
 
 seed: 0
 deterministic: False # enable deterministic cuDNN/cuBLAS kernels (slower, bit-exact)
+auto_resume: True # resume from checkpoint_path/resume.pt if present (preemption-safe)
 min_eval_interval: 0 # when to start the eval
 log_interval: 50 # stdout metric print cadence (in steps)
 

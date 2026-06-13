@@ -20,6 +20,7 @@ class DataProcessConfig(BaseModel):
     output_dir: str = "data/sudoku-extreme-full"
 
     subsample_size: Optional[int] = None
+    test_subsample_size: Optional[int] = None  # subsample the test split (keeps eval cheap)
     min_difficulty: Optional[int] = None
     num_aug: int = 0
     seed: int = 0  # seeds subsampling + augmentation for reproducible datasets
@@ -73,12 +74,14 @@ def convert_subset(set_name: str, config: DataProcessConfig):
                 inputs.append(np.frombuffer(q.replace('.', '0').encode(), dtype=np.uint8).reshape(9, 9) - ord('0'))
                 labels.append(np.frombuffer(a.encode(), dtype=np.uint8).reshape(9, 9) - ord('0'))
 
-    # If subsample_size is specified for the training set,
-    # randomly sample the desired number of examples.
-    if set_name == "train" and config.subsample_size is not None:
+    # Optionally subsample a split to a fixed size. Subsampling the test split
+    # keeps periodic evaluation cheap (the full Sudoku-Extreme test set is ~420k
+    # puzzles, which dominates wall-clock if evaluated in full every interval).
+    sub = config.subsample_size if set_name == "train" else config.test_subsample_size
+    if sub is not None:
         total_samples = len(inputs)
-        if config.subsample_size < total_samples:
-            indices = np.random.choice(total_samples, size=config.subsample_size, replace=False)
+        if sub < total_samples:
+            indices = np.random.choice(total_samples, size=sub, replace=False)
             inputs = [inputs[i] for i in indices]
             labels = [labels[i] for i in indices]
 
@@ -164,6 +167,9 @@ def preprocess_data(config: DataProcessConfig):
     np.random.seed(config.seed)
     convert_subset("train", config)
     convert_subset("test", config)
+    # Completion marker so launchers can skip rebuilding an existing dataset.
+    with open(os.path.join(config.output_dir, ".done"), "w") as f:
+        f.write("ok\n")
 
 
 if __name__ == "__main__":

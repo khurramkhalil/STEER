@@ -89,6 +89,7 @@ class PretrainConfig(pydantic.BaseModel):
     # Extras
     seed: int = 0
     deterministic: bool = False  # enable deterministic cuDNN/cuBLAS kernels (slower)
+    auto_resume: bool = True  # resume from checkpoint_path/resume.pt if present (preemption-safe)
     checkpoint_every_eval: bool = False
     eval_interval: Optional[int] = None
     min_eval_interval: Optional[int] = 0 # when to start eval
@@ -317,6 +318,37 @@ def save_train_state(config: PretrainConfig, train_state: TrainState):
             print(f"Uploaded checkpoint to HF Hub: {repo_id}")
         except Exception as e:
             print(f"Failed to upload to HF Hub: {e}")
+
+
+def save_resume_checkpoint(config: PretrainConfig, train_state: TrainState, ema_helper, iter_id: int):
+    """Atomically persist the raw training state for preemption-safe resume.
+
+    Saves model + optimizer + step + epoch-iter + EMA shadow to
+    ``checkpoint_path/resume.pt`` (on the persistent PVC). Written to a temp file
+    and renamed so a mid-write eviction cannot corrupt the checkpoint.
+    """
+    if config.checkpoint_path is None:
+        return
+    os.makedirs(config.checkpoint_path, exist_ok=True)
+    ckpt = {
+        "model_state_dict": train_state.model.state_dict(),
+        "optimizer_states": [opt.state_dict() for opt in train_state.optimizers],
+        "step": train_state.step,
+        "iter_id": iter_id,
+        "ema_shadow": ema_helper.state_dict() if ema_helper is not None else None,
+    }
+    tmp = os.path.join(config.checkpoint_path, "resume.pt.tmp")
+    final = os.path.join(config.checkpoint_path, "resume.pt")
+    torch.save(ckpt, tmp)
+    os.replace(tmp, final)  # atomic on POSIX
+
+
+def resume_checkpoint_path(config: PretrainConfig) -> Optional[str]:
+    """Return the resume checkpoint path if auto-resume should kick in, else None."""
+    if not config.auto_resume or config.load_checkpoint is not None or config.checkpoint_path is None:
+        return None
+    path = os.path.join(config.checkpoint_path, "resume.pt")
+    return path if os.path.exists(path) else None
 
 
 def load_checkpoint(model: nn.Module, config: PretrainConfig):
@@ -689,6 +721,14 @@ def launch(hydra_config: DictConfig):
     # Seed all RNGs (python/numpy/torch) for reproducibility.
     seed_everything(config.seed, rank=RANK, deterministic=config.deterministic)
 
+    # Preemption-safe resume: if a resume checkpoint exists, point load_checkpoint
+    # at it so the model/optimizer/step are restored during model construction.
+    resume_path = resume_checkpoint_path(config)
+    if resume_path is not None:
+        config.load_checkpoint = resume_path
+        if RANK == 0:
+            print(f"[resume] resuming from {resume_path}")
+
     # Dataset
     train_epochs_per_iter = config.eval_interval if config.eval_interval is not None else config.epochs
     total_iters = config.epochs // train_epochs_per_iter
@@ -735,8 +775,19 @@ def launch(hydra_config: DictConfig):
         ema_helper = EMAHelper(mu=config.ema_rate)
         ema_helper.register(train_state.model)
 
+    # If resuming, restore the epoch-iter counter and EMA shadow (the model,
+    # optimizer and step were already restored during model construction).
+    start_iter = 0
+    if resume_path is not None:
+        ckpt = torch.load(resume_path, map_location="cpu")
+        start_iter = int(ckpt.get("iter_id", -1)) + 1
+        if config.ema and ema_helper is not None and ckpt.get("ema_shadow"):
+            ema_helper.load_state_dict({k: v.to(DEVICE) for k, v in ckpt["ema_shadow"].items()})
+        if RANK == 0:
+            print(f"[resume] step={train_state.step}, resuming at iter {start_iter}/{total_iters}")
+
     # Training Loop
-    for _iter_id in range(total_iters):
+    for _iter_id in range(start_iter, total_iters):
         print (f"[Rank {RANK}, World Size {WORLD_SIZE}]: Epoch {_iter_id * train_epochs_per_iter}")
 
         ############ Train Iter
@@ -786,6 +837,9 @@ def launch(hydra_config: DictConfig):
             ############ Checkpointing
             if RANK == 0:
                 print("SAVE CHECKPOINT")
+                # Always persist a resume checkpoint (raw training state) so an
+                # evicted/preempted pod can continue from here.
+                save_resume_checkpoint(config, train_state, ema_helper, _iter_id)
             if RANK == 0 and (config.checkpoint_every_eval or (_iter_id == total_iters - 1)):
                 save_train_state(config, train_state_eval)
 
