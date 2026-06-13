@@ -235,6 +235,14 @@ def create_model(config: PretrainConfig, train_metadata: PuzzleDatasetMetadata, 
     if len(opt_dicts) == len(optimizers):
         for opt, opt_dict in zip(optimizers, opt_dicts):
             opt.load_state_dict(opt_dict)
+            # Optimizer state was loaded/broadcast from rank 0 (cuda:0); move each
+            # rank's state tensors to its own local device, or the fused optimizer
+            # step hits a cross-device mismatch.
+            if torch.cuda.is_available():
+                for state in opt.state.values():
+                    for k, v in state.items():
+                        if isinstance(v, torch.Tensor):
+                            state[k] = v.to(torch.cuda.current_device())
 
     return model, optimizers, optimizer_lrs, step
 
