@@ -85,7 +85,8 @@ spec:
             fi
             echo "Training experiment=${EXP} seed=${SEED} (auto-resume on)..."
             torchrun --nproc_per_node=${GPUS} pretrain.py \
-              experiment=${EXP} seed=${SEED} run_name=${RUN_NAME}
+              experiment=${EXP} seed=${SEED} run_name=${RUN_NAME} \
+              checkpoint_every_eval=False
         resources:
           requests:
             nvidia.com/a100: ${GPUS}
