@@ -28,12 +28,20 @@ no-op and have been retracted.) Reproduce with
 | Peak val-exact (early-stopping) | **24.7 ± 1.1%** | 22.9 ± 1.5% | −1.8pp | 0.20 |
 | Final val-exact (end of training) | 13.6 ± 0.6% | 13.6 ± 6.5% | −0.1pp | 1.00 |
 
-**Finding (honest):** in the small-data/grokking regime STEER provides **no
-improvement** — it is slightly worse on the peak metric (not significant) and
-identical on final accuracy, with markedly higher variance. All models overfit
-(val-exact peaks ~25% near step 10k, then collapses to ~13%); STEER does not
-reliably mitigate this. The generalization (augmented) regime is under
-evaluation — see **Phase 2** in [Tasks.md](Tasks.md).
+### Sudoku-Extreme, generalization regime (1M augmented puzzles, 3 seeds)
+
+| Metric | Baseline (λ=0.0) | STEER (λ=1.0) | Δ | perm. p |
+| :--- | :---: | :---: | :---: | :---: |
+| Peak val-exact (early-stopping) | **57.0 ± 3.4%** | 48.1 ± 0.5% | −8.9pp | 0.10 |
+| Final val-exact (end of training) | **54.8 ± 4.1%** | 28.3 ± 6.3% | −26.5pp | 0.10 |
+
+**Finding (honest):** with the corrected (non-no-op) implementation, STEER as
+formulated provides **no benefit and is net harmful** — neutral-to-slightly-worse
+in the small-data regime, and clearly worse in the generalization regime (every
+STEER seed below every baseline seed). The regularizer does reduce intermediate
+constraint violations during training, but forcing intermediate reasoning steps
+toward validity/stability degrades final solution quality. The original positive
+claims were artifacts of a no-op STEER. See [experiments_log.md](experiments_log.md).
 
 ## Requirements
 

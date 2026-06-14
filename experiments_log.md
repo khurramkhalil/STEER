@@ -48,8 +48,35 @@ Per-seed peak / final val-exact:
 - The regularizer *does* work mechanically during training (violations ↓,
   validity-rate ↑), but this does not translate into better generalization.
 
-### Generalization regime — 1M augmented puzzles (3 seeds)
+### Generalization regime — 1M augmented puzzles, 3 seeds
 
-W&B project `STEER_PAPER_AUGMENTED`. **In progress** (Phase 2-A, the deciding
-experiment for whether STEER helps where overfitting is not the dominant
-failure).
+W&B project `STEER_PAPER_AUGMENTED`. Completed 2026-06-14.
+
+| Metric | Baseline (λ=0.0) | STEER (λ=1.0) | Δ | perm. p |
+| :--- | :---: | :---: | :---: | :---: |
+| Peak val-exact (early-stopping) | 57.0 ± 3.4% | 48.1 ± 0.5% | −8.9pp | 0.10 |
+| Final val-exact (end of training) | 54.8 ± 4.1% | 28.3 ± 6.3% | −26.5pp | 0.10 |
+
+Per-seed peak / final val-exact:
+
+| Seed | Baseline peak | Baseline final | STEER peak | STEER final |
+| :---: | :---: | :---: | :---: | :---: |
+| 0 | 54.6% | 52.3% | 47.8% | 32.1% |
+| 1 | 60.9% | 59.5% | 47.8% | 31.8% |
+| 2 | 55.5% | 52.7% | 48.6% | 21.1% |
+
+**Findings:** STEER **actively harms** generalization — every STEER seed is below
+every baseline seed (complete separation; p=0.10 is the floor for 3v3), −8.9pp
+on peak and a large −26.5pp on final. The harm is much larger than in the
+grokking regime.
+
+---
+
+## Overall conclusion
+
+With the corrected (non-no-op) implementation, STEER as formulated provides **no
+benefit and is net harmful**: neutral-to-slightly-worse in the small-data
+regime, and clearly worse in the generalization regime. The regularizer does
+reduce intermediate constraint violations during training, but forcing
+intermediate reasoning steps toward validity/stability degrades the final
+solution quality. The original positive claims were artifacts of a no-op STEER.
