@@ -16,11 +16,24 @@ compute efficiency over baseline recursive models.
 
 ## Results
 
-> **Results are being regenerated.** The numbers previously reported here were
-> produced before a fix to the STEER training path (the regularizer had been an
-> inadvertent no-op), so they are not valid. Verified multi-seed results
-> (mean ± std with significance tests) are in progress — see **Phase 2** in
-> [Tasks.md](Tasks.md). This section will be updated when they land.
+Verified, multi-seed results with the corrected STEER training path. (The
+numbers previously reported here were produced when STEER was an inadvertent
+no-op and have been retracted.) Reproduce with
+[`scripts/collect_results.py`](scripts/collect_results.py).
+
+### Sudoku-Extreme, grokking regime (1k puzzles, no aug, 3 seeds)
+
+| Metric | Baseline (λ=0.0) | STEER (λ=0.1) | Δ | perm. p |
+| :--- | :---: | :---: | :---: | :---: |
+| Peak val-exact (early-stopping) | **24.7 ± 1.1%** | 22.9 ± 1.5% | −1.8pp | 0.20 |
+| Final val-exact (end of training) | 13.6 ± 0.6% | 13.6 ± 6.5% | −0.1pp | 1.00 |
+
+**Finding (honest):** in the small-data/grokking regime STEER provides **no
+improvement** — it is slightly worse on the peak metric (not significant) and
+identical on final accuracy, with markedly higher variance. All models overfit
+(val-exact peaks ~25% near step 10k, then collapses to ~13%); STEER does not
+reliably mitigate this. The generalization (augmented) regime is under
+evaluation — see **Phase 2** in [Tasks.md](Tasks.md).
 
 ## Requirements
 
